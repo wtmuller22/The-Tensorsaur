@@ -6,6 +6,8 @@ Created on Sep 7, 2018
 import pyglet
 from pyglet import image
 import physicalobject
+import scoreboard
+from scoreboard import Score
 from pyglet.window import key
 
 #Standing dino image
@@ -51,6 +53,7 @@ def update(dt):
 
 #Creates a window of a specific size
 window = pyglet.window.Window(1280, 720)
+score = Score()
 
 @window.event
 def on_draw():
@@ -59,6 +62,7 @@ def on_draw():
     movingGround2.draw()
     movingGround.draw()
     dino.draw()
+    score.batch.draw()
     
 @window.event
 def on_key_press(symbol, modifiers):
