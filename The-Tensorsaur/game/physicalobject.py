@@ -16,12 +16,12 @@ class PhysicalObject(pyglet.sprite.Sprite):
     #Updates object to move and check bounds
     def update(self, dt):
         self.x += self.velocity_x * dt
-        if self.y > 0:
-            self.velocity_y += self.acceleration_y * dt
-            self.y += self.velocity_y * dt
-        else:
+        self.velocity_y += self.acceleration_y * dt
+        if (self.y + self.velocity_y * dt) < 0:
             self.velocity_y = 0
             self.y = 0
+        else:
+            self.y += self.velocity_y * dt
         self.check_bounds()
     
     #Checks if object is out of frame and resets it
