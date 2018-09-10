@@ -7,6 +7,10 @@ import pyglet
 import gameboard
 
 class PhysicalObject(pyglet.sprite.Sprite):
+    
+    dinoDist = 0.0
+    current_ground_speed = -500
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.velocity_x, self.velocity_y = 0.0, 0.0
@@ -15,6 +19,8 @@ class PhysicalObject(pyglet.sprite.Sprite):
     
     #Updates object to move and check bounds
     def update(self, dt):
+        if ((self == gameboard.movingGround or self == gameboard.movingGround2) and (self.isVisible)):
+            self.velocity_x = self.current_ground_speed
         self.x += self.velocity_x * dt
         self.velocity_y += self.acceleration_y * dt
         if (self.y + self.velocity_y * dt) < 0:
@@ -37,3 +43,4 @@ class PhysicalObject(pyglet.sprite.Sprite):
             self.x = 1280
             self.isVisible = False
             
+        
