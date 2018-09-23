@@ -9,38 +9,23 @@ import gameboard
 class PhysicalObject(pyglet.sprite.Sprite):
     
     dinoDist = 0.0
-    current_ground_speed = -500
+    current_ground_speed = -500.0
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.velocity_x, self.velocity_y = 0.0, 0.0
-        self.isVisible = True
         self.acceleration_y = -4000
+        self.isJumping = False
     
     #Updates object to move and check bounds
     def update(self, dt):
-        if ((self == gameboard.movingGround or self == gameboard.movingGround2) and (self.isVisible)):
+        if ((self == gameboard.movingGround or self == gameboard.movingGround2) and (self.velocity_x != self.current_ground_speed)):
             self.velocity_x = self.current_ground_speed
         self.x += self.velocity_x * dt
+        #Dino jumping physics
         self.velocity_y += self.acceleration_y * dt
         if (self.y + self.velocity_y * dt) < 0:
             self.velocity_y = 0
             self.y = 0
         else:
             self.y += self.velocity_y * dt
-        self.check_bounds()
-    
-    #Checks if object is out of frame and resets it
-    def check_bounds(self):
-        min_x = -self.width
-        min_y = -self.height / 2
-        max_x = 1280
-        max_y = 720 + self.height / 2
-        if (self.x + self.width <= max_x):
-            gameboard.cycleGround()
-        if self.x < min_x:
-            self.velocity_x = 0.0
-            self.x = 1280
-            self.isVisible = False
-            
-        

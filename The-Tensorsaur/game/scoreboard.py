@@ -1,5 +1,4 @@
-import pyglet, time, sched, gameboard, physicalobject, math
-from pyglet.window import key
+import pyglet, gameboard, physicalobject, math
 from physicalobject import PhysicalObject
 '''
 Created on Sep 7, 2018
