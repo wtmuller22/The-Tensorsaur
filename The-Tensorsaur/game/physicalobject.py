@@ -24,8 +24,10 @@ class PhysicalObject(pyglet.sprite.Sprite):
         self.x += self.velocity_x * dt
         #Dino jumping physics
         self.velocity_y += self.acceleration_y * dt
-        if (self.y + self.velocity_y * dt) < 0:
-            self.velocity_y = 0
-            self.y = 0
-        else:
-            self.y += self.velocity_y * dt
+        if (self.y > 0):
+            if (self.y + self.velocity_y * dt) < 0:
+                self.velocity_y = 0
+                self.y = 0
+                self.image = gameboard.dinoRunning
+            else:
+                self.y += self.velocity_y * dt

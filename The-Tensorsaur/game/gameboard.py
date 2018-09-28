@@ -11,8 +11,9 @@ import scoreboard
 from scoreboard import Score
 from pyglet.window import key
 
-#Loads and instantiates running dino
-dinoRunning = image.load_animation('Dinomation.gif', None, None)
+#Loads and instantiates dino
+dinoRunning = image.load_animation('sprites/dinomation.gif', None, None)
+dinoDown = image.load_animation('sprites/downDinomation.gif', None, None)
 myBin = image.atlas.TextureBin()
 dinoRunning.add_to_texture_bin(myBin)
 dino = physicalobject.PhysicalObject(img=dinoRunning)
@@ -59,6 +60,7 @@ window = pyglet.window.Window(1280, 720)
 def on_draw():
     window.clear()
     
+    pyglet.sprite.Sprite(pyglet.image.load('sprites/ground.png')).draw()
     movingGround.draw()
     movingGround2.draw()
     for object in game_objects:
@@ -68,10 +70,18 @@ def on_draw():
     
 @window.event
 def on_key_press(symbol, modifiers):
-    if (symbol == key.UP) and (dino.y == 0):
+    if (symbol == key.UP or symbol == key.SPACE) and (dino.y == 0):
         dino.y = 1
         dino.velocity_y = 1000
         dino.isJumping = True
+        dino.image = pyglet.image.load('sprites/dinoStand.png')
+    elif (symbol == key.DOWN) and (dino.y == 0):
+        dino.image = dinoDown
+        
+@window.event
+def on_key_release(symbol, modifiers):
+    if (symbol == key.DOWN):
+        dino.image = dinoRunning
     
 pyglet.clock.schedule_interval(update, 1/120.0)
 pyglet.app.run()
