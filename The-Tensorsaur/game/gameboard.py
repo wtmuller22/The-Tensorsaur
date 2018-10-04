@@ -11,6 +11,11 @@ import scoreboard
 from scoreboard import Score
 from pyglet.window import key
 
+#Creates a window of a specific size
+window = pyglet.window.Window(960, 540)
+#Sets default window color to white
+pyglet.gl.glClearColor(1, 1, 1, 1)
+
 #Loads and instantiates dino
 dinoRunning = image.load_animation('sprites/dinomation.gif', None, None)
 dinoDown = image.load_animation('sprites/downDinomation.gif', None, None)
@@ -22,16 +27,16 @@ dino = physicalobject.PhysicalObject(img=dinoRunning)
 game_objects = [dino]
 
 #Creates score board
-score0 = Score(0, img=pyglet.image.load('sprites/0.png'), x=500, y=300)
-score1 = Score(1, img=pyglet.image.load('sprites/0.png'), x=480, y=300)
-score2 = Score(2, img=pyglet.image.load('sprites/0.png'), x=460, y=300)
-score3 = Score(3, img=pyglet.image.load('sprites/0.png'), x=440, y=300)
-score4 = Score(4, img=pyglet.image.load('sprites/0.png'), x=420, y=300)
+score0 = Score(0, img=pyglet.image.load('sprites/0.png'), x=(window.width/2 + 30), y=(window.height/2 - 20))
+score1 = Score(1, img=pyglet.image.load('sprites/0.png'), x=(window.width/2 + 10), y=(window.height/2 - 20))
+score2 = Score(2, img=pyglet.image.load('sprites/0.png'), x=(window.width/2 - 10), y=(window.height/2 - 20))
+score3 = Score(3, img=pyglet.image.load('sprites/0.png'), x=(window.width/2 - 30), y=(window.height/2 - 20))
+score4 = Score(4, img=pyglet.image.load('sprites/0.png'), x=(window.width/2 - 50), y=(window.height/2 - 20))
 score_board = [score0, score1, score2, score3, score4]
 
 #Creates ground
-movingGround = Ground(True, True, img=(pyglet.image.load('sprites/ground.png').get_region(0, 0, 1280, 28)), x=0, y=0)
-movingGround2 = Ground(False, False, img=(pyglet.image.load('sprites/ground.png').get_region(0, 0, 2, 28)), x=1280, y=0)
+movingGround = Ground(True, True, img=(pyglet.image.load('sprites/ground.png').get_region(0, 0, window.width, 28)), x=0, y=0)
+movingGround2 = Ground(False, False, img=(pyglet.image.load('sprites/ground.png').get_region(0, 0, 2, 28)), x=window.width, y=0)
 
 #Calls an update to the whole batch
 def update(dt):
@@ -52,9 +57,6 @@ def update(dt):
 #Updates distance dino has traveled
 def dino_distance(dt):
     physicalobject.PhysicalObject.dinoDist += (math.fabs(movingGround.current_ground_speed * dt)) / 100
-
-#Creates a window of a specific size
-window = pyglet.window.Window(1280, 720)
 
 @window.event
 def on_draw():
