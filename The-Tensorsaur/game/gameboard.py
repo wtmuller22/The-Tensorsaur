@@ -10,6 +10,7 @@ import physicalobject
 import scoreboard
 from scoreboard import Score
 from pyglet.window import key
+from pyglet.gl.base import ObjectSpace
 
 #Creates a window of a specific size
 window = pyglet.window.Window(960, 540)
@@ -19,12 +20,14 @@ pyglet.gl.glClearColor(1, 1, 1, 1)
 #Loads and instantiates dino
 dinoRunning = image.load_animation('sprites/dinomation.gif', None, None)
 dinoDown = image.load_animation('sprites/downDinomation.gif', None, None)
+bigCact = img=pyglet.image.load('sprites/bigCactus.png', None, None)
 myBin = image.atlas.TextureBin()
 dinoRunning.add_to_texture_bin(myBin)
 dino = physicalobject.PhysicalObject(img=dinoRunning)
+cactus = physicalobject.PhysicalObject(img=bigCact)
 
 #Batch of objects for convenient updating
-game_objects = [dino]
+game_objects = [dino, cactus]
 
 #Creates score board
 score0 = Score(0, img=pyglet.image.load('sprites/0.png'), x=(window.width/2 + 30), y=(window.height/2 - 20))
@@ -40,24 +43,34 @@ movingGround2 = Ground(False, False, img=(pyglet.image.load('sprites/ground.png'
 
 #Calls an update to the whole batch
 def update(dt):
-    physicalobject.PhysicalObject.current_ground_speed -= 5 #Slowly increases speed
-    for obj in game_objects:
-        obj.update(dt)
-    dino_distance(dt)
-    for score in score_board:
-        score.update_score()
+    if(not checkCollisions(dino, game_objects)):
+        physicalobject.PhysicalObject.current_ground_speed -= 5 #Slowly increases speed
+        for obj in game_objects:
+            obj.update(dt)
+        dino_distance(dt)
+        for score in score_board:
+            score.update_score()
     #Prevents gap from updating in wrong order
-    if movingGround.atOrigin:
-        movingGround.update_ground(dt)
-        movingGround2.update_ground(dt)
-    else:
-        movingGround2.update_ground(dt)
-        movingGround.update_ground(dt)
+        if movingGround.atOrigin:
+            movingGround.update_ground(dt)
+            movingGround2.update_ground(dt)
+        else:
+            movingGround2.update_ground(dt)
+            movingGround.update_ground(dt)
         
 #Updates distance dino has traveled
 def dino_distance(dt):
     physicalobject.PhysicalObject.dinoDist += (math.fabs(movingGround.current_ground_speed * dt)) / 100
-
+    
+#returns false if the dino is not in collision
+def checkCollisions(dino, game_objects):
+    for obj in game_objects:
+        if dino == obj:
+            continue
+        elif dino.collision(obj):
+            return True
+    return False
+            
 @window.event
 def on_draw():
     window.clear()
