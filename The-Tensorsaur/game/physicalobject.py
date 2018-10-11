@@ -21,6 +21,8 @@ class PhysicalObject(pyglet.sprite.Sprite):
     def update(self, dt):        
         if ((self == gameboard.movingGround or self == gameboard.movingGround2) and (self.velocity_x != self.current_ground_speed)):
             self.velocity_x = self.current_ground_speed
+        if (self != gameboard.dino):
+            self.velocity_x = self.current_ground_speed
         self.x += self.velocity_x * dt
         #Dino jumping physics
         self.velocity_y += self.acceleration_y * dt
@@ -36,11 +38,13 @@ class PhysicalObject(pyglet.sprite.Sprite):
     def overlap(self, range1:list, range2:list):
         return range1[0] <= range2[1] and range2[0] <= range1[1]
                 
-    #checks if the self is in a state of collision with the
+    #checks if the self, the dino, is in a state of collision with the
     #other physical object
     def collision(self, other) -> bool:
-        xRangeSelf = [self.x, self.x + self.width]
-        yRangeSelf = [self.y, self.y + self.height]
+        #little adjustments for the dinosaur as it will always be self
+        xRangeSelf = [self.x - 15, self.x + self.width - 15]
+        yRangeSelf = [self.y - 2, self.y + self.height - 2]
+        
         xRangeOther = [other.x, other.x + other.width]
         yRangeOther = [other.y, other.y + other.height]
-        return self.overlap(xRangeSelf, xRangeOther) or self.overlap(yRangeSelf, yRangeOther)
+        return self.overlap(xRangeSelf, xRangeOther) and self.overlap(yRangeSelf, yRangeOther)

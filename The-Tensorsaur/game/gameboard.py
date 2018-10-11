@@ -20,11 +20,19 @@ pyglet.gl.glClearColor(1, 1, 1, 1)
 #Loads and instantiates dino
 dinoRunning = image.load_animation('sprites/dinomation.gif', None, None)
 dinoDown = image.load_animation('sprites/downDinomation.gif', None, None)
+dinoDead = img=pyglet.image.load('sprites/dinoDead.png', None, None)
 bigCact = img=pyglet.image.load('sprites/bigCactus.png', None, None)
+
+game_over = pyglet.sprite.Sprite(img=pyglet.image.load('sprites/gameOver.png'))
+game_over.x = (window.width/5 - 100)
+game_over.y = (window.height/5)
+game_over.opacity = 0
+
 myBin = image.atlas.TextureBin()
 dinoRunning.add_to_texture_bin(myBin)
 dino = physicalobject.PhysicalObject(img=dinoRunning)
 cactus = physicalobject.PhysicalObject(img=bigCact)
+cactus.x = 900
 
 #Batch of objects for convenient updating
 game_objects = [dino, cactus]
@@ -57,6 +65,10 @@ def update(dt):
         else:
             movingGround2.update_ground(dt)
             movingGround.update_ground(dt)
+    else:
+        dino.image = dinoDead
+        game_over.opacity = 255
+        
         
 #Updates distance dino has traveled
 def dino_distance(dt):
@@ -65,9 +77,7 @@ def dino_distance(dt):
 #returns false if the dino is not in collision
 def checkCollisions(dino, game_objects):
     for obj in game_objects:
-        if dino == obj:
-            continue
-        elif dino.collision(obj):
+        if dino != obj and dino.collision(obj):
             return True
     return False
             
@@ -82,6 +92,7 @@ def on_draw():
         object.draw()
     for score in score_board:
         score.draw()
+    game_over.draw()
     
 @window.event
 def on_key_press(symbol, modifiers):
@@ -98,5 +109,5 @@ def on_key_release(symbol, modifiers):
     if (symbol == key.DOWN):
         dino.image = dinoRunning
     
-pyglet.clock.schedule_interval(update, 1/120.0)
+pyglet.clock.schedule_interval(update, 1/400.0)
 pyglet.app.run()
