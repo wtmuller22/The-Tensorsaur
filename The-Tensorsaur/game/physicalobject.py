@@ -8,7 +8,7 @@ import gameboard
 
 class PhysicalObject(pyglet.sprite.Sprite):
     
-    dinoDist = 0.0
+    dino_dist = 0.0
     current_ground_speed = -500.0
     
     def __init__(self, *args, **kwargs):
@@ -19,7 +19,7 @@ class PhysicalObject(pyglet.sprite.Sprite):
     
     #Updates object to move and check bounds
     def update(self, dt):        
-        if ((self == gameboard.movingGround or self == gameboard.movingGround2) and (self.velocity_x != self.current_ground_speed)):
+        if ((self == gameboard.moving_ground or self == gameboard.moving_ground_2) and (self.velocity_x != self.current_ground_speed)):
             self.velocity_x = self.current_ground_speed
         if (self != gameboard.dino):
             self.velocity_x = self.current_ground_speed
@@ -30,7 +30,7 @@ class PhysicalObject(pyglet.sprite.Sprite):
             if (self.y + self.velocity_y * dt) < 0:
                 self.velocity_y = 0
                 self.y = 0
-                self.image = gameboard.dinoRunning
+                self.image = gameboard.dino_running
             else:
                 self.y += self.velocity_y * dt
                 
@@ -42,9 +42,9 @@ class PhysicalObject(pyglet.sprite.Sprite):
     #other physical object
     def collision(self, other) -> bool:
         #little adjustments for the dinosaur as it will always be self
-        xRangeSelf = [self.x - 15, self.x + self.width - 15]
-        yRangeSelf = [self.y - 2, self.y + self.height - 2]
+        x_range_self = [self.x - 20, self.x + self.width - 15]
+        y_range_self = [self.y - 2, self.y + self.height - 2]
         
-        xRangeOther = [other.x, other.x + other.width]
-        yRangeOther = [other.y, other.y + other.height]
-        return self.overlap(xRangeSelf, xRangeOther) and self.overlap(yRangeSelf, yRangeOther)
+        x_range_other = [other.x, other.x + other.width]
+        y_range_other = [other.y, other.y + other.height]
+        return self.overlap(x_range_self, x_range_other) and self.overlap(y_range_self, y_range_other)

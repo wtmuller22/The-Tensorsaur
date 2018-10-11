@@ -18,7 +18,7 @@ class Ground(PhysicalObject):
         self.length = gameboard.window.width
     
     def update_ground(self, dt):
-        wholeGround = image.load('sprites/ground.png')
+        whole_ground = image.load('sprites/ground.png')
         if self.isVisible and self.atOrigin:
             if self.start + (math.floor(math.fabs(self.current_ground_speed * dt)) / 2) >= 2402:
                 self.isVisible = False
@@ -31,24 +31,24 @@ class Ground(PhysicalObject):
                 self.length = gameboard.window.width
                 if self.start + self.length >= 2402:
                     self.length = 2402 - self.start
-                    if self != gameboard.movingGround:
-                        gameboard.movingGround.isVisible = True
+                    if self != gameboard.moving_ground:
+                        gameboard.moving_ground.isVisible = True
                     else:
-                        gameboard.movingGround2.isVisible = True
-                self.image = wholeGround.get_region(self.start, 0, self.length, 28)
+                        gameboard.moving_ground_2.isVisible = True
+                self.image = whole_ground.get_region(self.start, 0, self.length, 28)
         elif self.isVisible:
-            if (self == gameboard.movingGround and not gameboard.movingGround2.isVisible) or (self == gameboard.movingGround2 and not gameboard.movingGround.isVisible):
+            if (self == gameboard.moving_ground and not gameboard.moving_ground_2.isVisible) or (self == gameboard.moving_ground_2 and not gameboard.moving_ground.isVisible):
                 self.atOrigin = True
                 self.x = 0
-            if self == gameboard.movingGround:
-                self.length = gameboard.window.width - gameboard.movingGround2.length
+            if self == gameboard.moving_ground:
+                self.length = gameboard.window.width - gameboard.moving_ground_2.length
                 if self.length <= 0:
                     self.length = 1
-                self.image = wholeGround.get_region(0, 0, self.length, 28)
-                self.x = gameboard.movingGround2.length
-            elif self == gameboard.movingGround2:
-                self.length = gameboard.window.width - gameboard.movingGround.length
+                self.image = whole_ground.get_region(0, 0, self.length, 28)
+                self.x = gameboard.moving_ground_2.length
+            elif self == gameboard.moving_ground_2:
+                self.length = gameboard.window.width - gameboard.moving_ground.length
                 if self.length <= 0:
                     self.length = 1
-                self.image = wholeGround.get_region(0, 0, self.length, 28)
-                self.x = gameboard.movingGround.length
+                self.image = whole_ground.get_region(0, 0, self.length, 28)
+                self.x = gameboard.moving_ground.length

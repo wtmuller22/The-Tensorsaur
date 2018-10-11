@@ -25,6 +25,6 @@ class Score(PhysicalObject):
                       pyglet.image.load('sprites/8.png'),
                       pyglet.image.load('sprites/9.png')]
         
-        self.image = digitArray[math.floor((self.dinoDist / (10**self.number)) % 10)]
+        self.image = digitArray[math.floor((self.dino_dist / (10**self.number)) % 10)]
                        
 #end of score class
