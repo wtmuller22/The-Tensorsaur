@@ -1,7 +1,7 @@
 '''
 Created on Sep 7, 2018
 
-@author: wtmul
+@author: wtmul, cpendery
 '''
 import pyglet, math, ground
 from ground import Ground
@@ -21,7 +21,6 @@ pyglet.gl.glClearColor(1, 1, 1, 1)
 dino_running = image.load_animation('sprites/dinomation.gif', None, None)
 dino_down = image.load_animation('sprites/downDinomation.gif', None, None)
 dino_dead = img=pyglet.image.load('sprites/dinoDead.png', None, None)
-big_cact = img=pyglet.image.load('sprites/bigCactus.png', None, None)
 
 game_over = pyglet.sprite.Sprite(img=pyglet.image.load('sprites/gameOver.png'))
 game_over.x = (window.width/5 - 100)
@@ -31,11 +30,23 @@ game_over.opacity = 0
 my_bin = image.atlas.TextureBin()
 dino_running.add_to_texture_bin(my_bin)
 dino = physicalobject.PhysicalObject(img=dino_running)
+
+#adding in the big cactus
+big_cact = img=pyglet.image.load('sprites/bigCactus.png', None, None)
 cactus = physicalobject.PhysicalObject(img=big_cact)
-cactus.x = 900
+cactus.x = 2000
+
+#adding in a bird
+bird_flap = image.load_animation('sprites/birdomation.gif', None, None)
+bird_flap.add_to_texture_bin(my_bin)
+bird = physicalobject.PhysicalObject(img=bird_flap)
+bird.setBird(True)
+bird.x = 500
+#70 for hits, 100 for no need to duck (will not have low jumps for birds)
+bird.y = 100
 
 #Batch of objects for convenient updating
-game_objects = [dino, cactus]
+game_objects = [dino, cactus, bird]
 
 #Creates score board
 score0 = Score(0, img=pyglet.image.load('sprites/0.png'), x=(window.width/2 + 30), y=(window.height/2 - 20))
@@ -109,5 +120,5 @@ def on_key_release(symbol, modifiers):
     if (symbol == key.DOWN):
         dino.image = dino_running
     
-pyglet.clock.schedule_interval(update, 1/100.0)
+pyglet.clock.schedule_interval(update, 1/30.0)
 pyglet.app.run()

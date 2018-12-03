@@ -1,7 +1,7 @@
 '''
 Created on Sep 7, 2018
 
-@author: wtmul
+@author: wtmul, cpendery
 '''
 import pyglet
 import gameboard
@@ -16,7 +16,10 @@ class PhysicalObject(pyglet.sprite.Sprite):
         self.velocity_x, self.velocity_y = 0.0, 0.0
         self.acceleration_y = -4000
         self.isJumping = False
+        self.bird = False
     
+    def setBird(self, val):
+        self.bird = val
     #Updates object to move and check bounds
     def update(self, dt):        
         if ((self == gameboard.moving_ground or self == gameboard.moving_ground_2) and (self.velocity_x != self.current_ground_speed)):
@@ -26,7 +29,7 @@ class PhysicalObject(pyglet.sprite.Sprite):
         self.x += self.velocity_x * dt
         #Dino jumping physics
         self.velocity_y += self.acceleration_y * dt
-        if (self.y > 0):
+        if (self.y > 0 and self.bird == False):
             if (self.y + self.velocity_y * dt) < 0:
                 self.velocity_y = 0
                 self.y = 0
