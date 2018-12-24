@@ -9,7 +9,7 @@ import gameboard
 class PhysicalObject(pyglet.sprite.Sprite):
     
     dino_dist = 0.0
-    current_ground_speed = -500.0
+    current_ground_speed = -800.0
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

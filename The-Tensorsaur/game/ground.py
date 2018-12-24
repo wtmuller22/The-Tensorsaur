@@ -1,6 +1,6 @@
-import pyglet, gameboard, physicalobject, math
-from physicalobject import PhysicalObject
+import gameboard, math
 from pyglet import image
+from physicalobject import PhysicalObject
 '''
 Created on Sep 21, 2018
 

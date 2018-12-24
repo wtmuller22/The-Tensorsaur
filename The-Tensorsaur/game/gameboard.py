@@ -3,11 +3,10 @@ Created on Sep 7, 2018
 
 @author: wtmul, cpendery
 '''
-import pyglet, math, ground
+import pyglet, math
 from ground import Ground
 from pyglet import image
 import physicalobject
-import scoreboard
 from scoreboard import Score
 from pyglet.window import key
 from pyglet.gl.base import ObjectSpace
@@ -63,12 +62,18 @@ moving_ground_2 = Ground(False, False, img=(pyglet.image.load('sprites/ground.pn
 #Calls an update to the whole batch
 def update(dt):
     if(not checkCollisions(dino, game_objects)):
-        physicalobject.PhysicalObject.current_ground_speed -= 5 #Slowly increases speed
         for obj in game_objects:
             obj.update(dt)
         dino_distance(dt)
+    #Updates/Flashes score
         for score in score_board:
-            score.update_score()
+            if not score.isFlashing:
+                score.update_score()
+            if (not score.isFlashing and not math.floor(physicalobject.PhysicalObject.dino_dist) == 0 and
+                    math.floor(physicalobject.PhysicalObject.dino_dist % 100) == 0):
+                score.isFlashing = True
+                physicalobject.PhysicalObject.current_ground_speed -= 10 #Increases speed
+                score.flashing()
     #Prevents gap from updating in wrong order
         if moving_ground.atOrigin:
             moving_ground.update_ground(dt)
@@ -78,6 +83,7 @@ def update(dt):
             moving_ground.update_ground(dt)
     else:
         dino.image = dino_dead
+        bird.image = pyglet.image.load('sprites/birdFlapped.png', None, None)
         game_over.opacity = 255
         
         
