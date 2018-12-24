@@ -1,6 +1,5 @@
-import gameboard, math
+import gameboard, math, pyglet
 from pyglet import image
-from physicalobject import PhysicalObject
 '''
 Created on Sep 21, 2018
 
@@ -8,7 +7,9 @@ Created on Sep 21, 2018
 '''
 
 #Ground class
-class Ground(PhysicalObject):
+class Ground(pyglet.sprite.Sprite):
+    
+    current_ground_speed = -800.0
     
     def __init__(self, vis, at, *args, **kwargs):
         super().__init__(*args, **kwargs)
