@@ -3,7 +3,7 @@ Created on Sep 7, 2018
 
 @author: wtmul, cpendery
 '''
-import pyglet, math
+import pyglet, math, random
 from ground import Ground
 from pyglet import image
 from scoreboard import Score
@@ -22,10 +22,8 @@ pyglet.gl.glClearColor(1, 1, 1, 1)
 #Loads and instantiates objects
 game_over = Lose()
 dino = Dinosaur()
-cactus = Cactus()
-bird = Bird()
 score_board = Scoreboard()
-game_objects = [dino, cactus, bird]
+game_objects = [dino]
 moving_ground = Ground(True, True, img=(pyglet.image.load('sprites/ground.png').get_region(0, 0, window.width, 28)), x=0, y=0)
 moving_ground_2 = Ground(False, False, img=(pyglet.image.load('sprites/ground.png').get_region(0, 0, 2, 28)), x=window.width, y=0)
 
@@ -54,9 +52,22 @@ def update(dt):
 #Checks if game is over
     if(checkCollisions(dino, game_objects)):
         dino.image = Dinosaur.dino_dead
-        bird.image = pyglet.image.load('sprites/birdFlapped.png', None, None)
         game_over.opacity = 255
         pyglet.clock.unschedule(update)
+        pyglet.clock.unschedule(spawn)
+        
+def spawn(dt):
+    if Dinosaur.dino_dist < 100:
+        game_objects.append(Cactus())
+    else:
+        decide = random.randint(1, 6)
+        if decide == 1 or decide == 2:
+            game_objects.append(Bird())
+        else:
+            game_objects.append(Cactus())
+    num = random.randint(100, 126) + math.fabs((Ground.current_ground_speed + 800) / 2)
+    pyglet.clock.schedule_once(spawn, num / 100)
+        
     
 #returns false if the dino is not in collision
 def checkCollisions(dino, game_objects):
@@ -64,6 +75,20 @@ def checkCollisions(dino, game_objects):
         if dino != obj and dino.collision(obj):
             return True
     return False
+
+def restart():
+    Dinosaur.dino_dist = 0.0
+    Ground.current_ground_speed = -800.0
+    obstacles = game_objects[1:]
+    for obs in obstacles:
+        obs.delete()
+        game_objects.remove(obs)
+    game_over.opacity = 0
+    dino.y = 0
+    dino.velocity_y = 0
+    dino.image = Dinosaur.dino_running
+    pyglet.clock.schedule_once(spawn, 2.0)
+    pyglet.clock.schedule_interval(update, 1/30.0)
             
 @window.event
 def on_draw():
@@ -79,6 +104,8 @@ def on_draw():
     
 @window.event
 def on_key_press(symbol, modifiers):
+    if (game_over.opacity == 255):
+        restart()
     if (symbol == key.UP or symbol == key.SPACE) and (dino.y == 0):
         dino.y = 1
         dino.velocity_y = 1000
@@ -92,5 +119,6 @@ def on_key_release(symbol, modifiers):
     if (symbol == key.DOWN):
         dino.image = Dinosaur.dino_running
     
+pyglet.clock.schedule_once(spawn, 2.0)
 pyglet.clock.schedule_interval(update, 1/30.0)
 pyglet.app.run()

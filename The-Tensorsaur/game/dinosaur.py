@@ -20,8 +20,8 @@ class Dinosaur(pyglet.sprite.Sprite):
         self.isJumping = False
     
     def update(self, dt):
-        self.velocity_y += self.acceleration_y * dt
         if (self.y > 0):
+            self.velocity_y += self.acceleration_y * dt
             if (self.y + self.velocity_y * dt) < 0:
                 self.velocity_y = 0
                 self.y = 0
