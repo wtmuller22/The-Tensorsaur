@@ -48,11 +48,11 @@ class Score(pyglet.sprite.Sprite):
 class Scoreboard:
     
     def __init__(self):
-        score0 = Score(0, img=pyglet.image.load('sprites/0.png'), x=(gameboard.window.width/2 + 30), y=(gameboard.window.height/2 - 20))
-        score1 = Score(1, img=pyglet.image.load('sprites/0.png'), x=(gameboard.window.width/2 + 10), y=(gameboard.window.height/2 - 20))
-        score2 = Score(2, img=pyglet.image.load('sprites/0.png'), x=(gameboard.window.width/2 - 10), y=(gameboard.window.height/2 - 20))
-        score3 = Score(3, img=pyglet.image.load('sprites/0.png'), x=(gameboard.window.width/2 - 30), y=(gameboard.window.height/2 - 20))
-        score4 = Score(4, img=pyglet.image.load('sprites/0.png'), x=(gameboard.window.width/2 - 50), y=(gameboard.window.height/2 - 20))
+        score0 = Score(0, img=pyglet.image.load('sprites/0.png'), x=(gameboard.window.width/2 + 10), y=(gameboard.window.height/2 - 20))
+        score1 = Score(1, img=pyglet.image.load('sprites/0.png'), x=(gameboard.window.width/2 - 10), y=(gameboard.window.height/2 - 20))
+        score2 = Score(2, img=pyglet.image.load('sprites/0.png'), x=(gameboard.window.width/2 - 30), y=(gameboard.window.height/2 - 20))
+        score3 = Score(3, img=pyglet.image.load('sprites/0.png'), x=(gameboard.window.width/2 - 50), y=(gameboard.window.height/2 - 20))
+        score4 = Score(4, img=pyglet.image.load('sprites/0.png'), x=(gameboard.window.width/2 - 70), y=(gameboard.window.height/2 - 20))
         self.board = [score0, score1, score2, score3, score4]
         
 #end of Score board class

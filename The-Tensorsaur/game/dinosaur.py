@@ -8,6 +8,7 @@ Created on Sep 7, 2018
 #Dino Class
 class Dinosaur(pyglet.sprite.Sprite):
     
+    high_score = 0.0
     dino_dist = 0.0
     dino_running = image.load_animation('sprites/dinomation.gif', None, None)
     dino_down = image.load_animation('sprites/downDinomation.gif', None, None)
@@ -16,8 +17,9 @@ class Dinosaur(pyglet.sprite.Sprite):
     def __init__(self):
         super().__init__(img=Dinosaur.dino_running)
         self.velocity_y = 0.0
-        self.acceleration_y = -4000
+        self.acceleration_y = -3500
         self.isJumping = False
+        self.x = 20
     
     def update(self, dt):
         if (self.y > 0):
