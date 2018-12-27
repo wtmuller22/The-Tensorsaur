@@ -19,7 +19,7 @@ class Bird(pyglet.sprite.Sprite):
         #70 for hits, 100 for no need to duck (will not have low jumps for birds)
         rand = random.randint(1, 6)
         if rand == 1 or rand == 2:
-            self.y = 100
+            self.y = 120
         elif rand == 3 or rand == 4:
             self.y = 65
         else:

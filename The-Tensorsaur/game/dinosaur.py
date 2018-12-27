@@ -53,9 +53,11 @@ class Dinosaur(pyglet.sprite.Sprite):
             sections = Dinosaur.get_sections(self, other, regions)
             set_one = Dinosaur.get_pixel_alpha_data(self, sections[0])
             set_two = Dinosaur.get_pixel_alpha_data(self, sections[1])
+            if set_one == 0 or set_two == 0:
+                return False
             min_len = min(len(set_one), len(set_two))
             for i in range(min_len):
-                if set_one[i] > 25 and set_two[i] > 25:
+                if set_one[i] > 200 and set_two[i] > 200:
                     return True
             return False
         else:
@@ -124,8 +126,10 @@ class Dinosaur(pyglet.sprite.Sprite):
         raw.width = math.ceil(raw.width)
         raw.height = math.ceil(raw.height)
         pitch = raw.width * len('RGBA')
+        if raw.width == 0:
+            return 0
         pixels = raw.get_data('RGBA', pitch)
-        data = unpack("%iB" % (4 * section.width * section.height), pixels)
+        data = unpack("%iB" % (len(pixels)), pixels)
         mask = data[3::4]
         return mask
     
