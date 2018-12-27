@@ -1,7 +1,7 @@
 '''
 Created on Sep 7, 2018
 
-@author: wtmul, cpendery
+@author: wmuller, cpendery
 '''
 import pyglet, math, random
 from ground import Ground
@@ -75,7 +75,7 @@ def update(dt):
         obstacles = game_objects[1:]
         for obs in obstacles:
             if isinstance(obs, Bird):
-                obs.image = image.load('sprites/birdFlapped.png')
+                obs.image = Bird.bird_flapped
         
 def spawn(dt):
     if Dinosaur.dino_dist < 100:

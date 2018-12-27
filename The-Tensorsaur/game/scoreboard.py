@@ -3,7 +3,7 @@ from dinosaur import Dinosaur
 '''
 Created on Sep 7, 2018
 
-@author: 17cha
+@author: wmuller, cpendery
 '''
 
 #Score Class
@@ -15,18 +15,7 @@ class Score(pyglet.sprite.Sprite):
         self.isFlashing = False
 
     def update_score(self):
-        digitArray = [pyglet.image.load('sprites/0.png'),
-                      pyglet.image.load('sprites/1.png'),
-                      pyglet.image.load('sprites/2.png'),
-                      pyglet.image.load('sprites/3.png'),
-                      pyglet.image.load('sprites/4.png'),
-                      pyglet.image.load('sprites/5.png'),
-                      pyglet.image.load('sprites/6.png'),
-                      pyglet.image.load('sprites/7.png'),
-                      pyglet.image.load('sprites/8.png'),
-                      pyglet.image.load('sprites/9.png')]
-        
-        self.image = digitArray[math.floor((Dinosaur.dino_dist / (10**self.number)) % 10)]
+        self.image = Scoreboard.digitArray[math.floor((Dinosaur.dino_dist / (10**self.number)) % 10)]
         
     def flash(self, dt):
         if self.opacity == 0:
@@ -46,6 +35,17 @@ class Score(pyglet.sprite.Sprite):
 
 #Score board class
 class Scoreboard:
+    
+    digitArray = [pyglet.image.load('sprites/0.png'),
+                      pyglet.image.load('sprites/1.png'),
+                      pyglet.image.load('sprites/2.png'),
+                      pyglet.image.load('sprites/3.png'),
+                      pyglet.image.load('sprites/4.png'),
+                      pyglet.image.load('sprites/5.png'),
+                      pyglet.image.load('sprites/6.png'),
+                      pyglet.image.load('sprites/7.png'),
+                      pyglet.image.load('sprites/8.png'),
+                      pyglet.image.load('sprites/9.png')]
     
     def __init__(self):
         score0 = Score(0, img=pyglet.image.load('sprites/0.png'), x=(gameboard.window.width/2 + 10), y=(gameboard.window.height/2 - 20))

@@ -5,13 +5,16 @@ import gameboard
 '''
 Created on Dec 24, 2018
 
-@author: wtmul
+@author: wtmuller, cpendery
 '''
 
 class Bird(pyglet.sprite.Sprite):
 
+    bird_flapped = image.load('sprites/birdFlapped.png')
+    bird_flapping = image.load_animation('sprites/birdomation.gif', None, None)
+
     def __init__(self):
-        super().__init__(img=image.load_animation('sprites/birdomation.gif', None, None))
+        super().__init__(img=Bird.bird_flapping)
         self.x = gameboard.window.width
         #70 for hits, 100 for no need to duck (will not have low jumps for birds)
         rand = random.randint(1, 6)

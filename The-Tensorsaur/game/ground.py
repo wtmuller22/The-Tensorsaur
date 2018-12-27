@@ -3,7 +3,7 @@ from pyglet import image
 '''
 Created on Sep 21, 2018
 
-@author: wtmul
+@author: wtmuller, cpendery
 '''
 
 #Ground class

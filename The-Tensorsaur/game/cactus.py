@@ -4,7 +4,7 @@ from ground import Ground
 '''
 Created on Dec 24, 2018
 
-@author: wtmul
+@author: wtmuller, cpendery
 '''
 
 class Cactus(pyglet.sprite.Sprite):
