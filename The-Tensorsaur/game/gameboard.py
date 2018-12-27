@@ -68,7 +68,7 @@ def update(dt):
                 score.opacity = 255
                 score.update_score()
         dino.image = Dinosaur.dino_dead
-        game_over.opacity = 255
+        pyglet.clock.schedule_once(game_over_visible, 1.0)
         pyglet.clock.unschedule(update)
         pyglet.clock.unschedule(spawn)
     #Stops bird flapping
@@ -76,6 +76,9 @@ def update(dt):
         for obs in obstacles:
             if isinstance(obs, Bird):
                 obs.image = Bird.bird_flapped
+                
+def game_over_visible(dt):
+    game_over.opacity = 255
         
 def spawn(dt):
     if Dinosaur.dino_dist < 100:
@@ -128,19 +131,20 @@ def on_draw():
     
 @window.event
 def on_key_press(symbol, modifiers):
+    if dino.image == Dinosaur.dino_running or dino.image == Dinosaur.dino_down:
+        if (symbol == key.UP or symbol == key.SPACE) and (dino.y == 0):
+            dino.y = 1
+            dino.velocity_y = 1200
+            dino.isJumping = True
+            dino.image = pyglet.image.load('sprites/dinoStand.png')
+        elif (symbol == key.DOWN) and (dino.y == 0):
+            dino.image = Dinosaur.dino_down
     if (game_over.opacity == 255):
         restart()
-    if (symbol == key.UP or symbol == key.SPACE) and (dino.y == 0):
-        dino.y = 1
-        dino.velocity_y = 1200
-        dino.isJumping = True
-        dino.image = pyglet.image.load('sprites/dinoStand.png')
-    elif (symbol == key.DOWN) and (dino.y == 0):
-        dino.image = Dinosaur.dino_down
         
 @window.event
 def on_key_release(symbol, modifiers):
-    if (symbol == key.DOWN):
+    if (symbol == key.DOWN) and (dino.image == Dinosaur.dino_down):
         dino.image = Dinosaur.dino_running
     
 pyglet.clock.schedule_once(spawn, 2.0)
