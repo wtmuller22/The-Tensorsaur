@@ -18,6 +18,7 @@ class Cactus(pyglet.sprite.Sprite):
         super().__init__(img=image.load('sprites/bigCactus.png'))
         self.rand_image()
         self.x = gameboard.window.width 
+        self.y = 7
         self.velocity_x = Ground.current_ground_speed
         
     def update(self, dt):

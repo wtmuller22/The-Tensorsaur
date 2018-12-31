@@ -1,0 +1,8 @@
+#creating a dataset
+https://towardsdatascience.com/how-to-use-dataset-in-tensorflow-c758ef9e4428
+
+#array creation
+https://docs.scipy.org/doc/numpy-1.13.0/user/basics.creation.html
+
+#reading in the data
+https://www.tensorflow.org/api_guides/python/reading_data
