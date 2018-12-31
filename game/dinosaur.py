@@ -10,7 +10,18 @@ Created on Sep 7, 2018
 #Dino Class
 class Dinosaur(pyglet.sprite.Sprite):
     
-    high_score = 0.0
+    def update_high_score(score):
+        f = open("highscore.txt", 'w')
+        f.write('%d' % score)
+        f.close()
+        
+    def get_high_score():
+        f = open("highscore.txt", 'r')
+        toReturn = int(f.read())
+        f.close()
+        return toReturn
+    
+    high_score = get_high_score()
     dino_dist = 0.0
     dino_running = image.load_animation('sprites/dinomation.gif', None, None)
     dino_down = image.load_animation('sprites/downDinomation.gif', None, None)
@@ -132,6 +143,8 @@ class Dinosaur(pyglet.sprite.Sprite):
         data = unpack("%iB" % (len(pixels)), pixels)
         mask = data[3::4]
         return mask
+    
+    
     
 #End of Class
 

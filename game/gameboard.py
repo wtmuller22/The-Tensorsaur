@@ -8,32 +8,33 @@ from ground import Ground
 from pyglet import image
 from scoreboard import Score
 from scoreboard import Scoreboard
+from scoreboard import HighScoreboard
 from pyglet.window import key
 from pyglet.gl.base import ObjectSpace
 from dinosaur import Dinosaur
 from cactus import Cactus
 from bird import Bird
 from lose import Lose
+from lose import Restart
 
 #Creates a white window of a specific size
-window = pyglet.window.Window(960, 540)
+window = pyglet.window.Window(fullscreen=True)
 pyglet.gl.glClearColor(1, 1, 1, 1)
 
 #Loads and instantiates objects
 game_over = Lose()
+restart_button = Restart()
 dino = Dinosaur()
 score_board = Scoreboard()
-high_score = Scoreboard()
+high_score = HighScoreboard()
 game_objects = [dino]
 moving_ground = Ground(True, True, img=(pyglet.image.load('sprites/ground.png').get_region(0, 0, window.width, 28)), x=0, y=0)
 moving_ground_2 = Ground(False, False, img=(pyglet.image.load('sprites/ground.png').get_region(0, 0, 2, 28)), x=window.width, y=0)
 
 #Sets up high score
-high = pyglet.sprite.Sprite(img=image.load('sprites/highScore.png'), x=(window.width/2 - 100), y=(window.height - 150))
+high = pyglet.sprite.Sprite(img=image.load('sprites/highScore.png'), x=(window.width - 220), y=(window.height/2 + 20))
 high.opacity = 0
 for score in high_score.board:
-    score.y = window.height - 150
-    score.x = score.x + 20
     score.opacity = 0
 
 def update(dt):
@@ -63,10 +64,11 @@ def update(dt):
     #Sets high score
         if Dinosaur.dino_dist > Dinosaur.high_score:
             Dinosaur.high_score = Dinosaur.dino_dist
-            high.opacity = 255
-            for score in high_score.board:
-                score.opacity = 255
-                score.update_score()
+            Dinosaur.update_high_score(Dinosaur.high_score)
+        high.opacity = 255
+        for score in high_score.board:
+            score.opacity = 255
+            score.update_score_p(Dinosaur.high_score)
         dino.image = Dinosaur.dino_dead
         pyglet.clock.schedule_once(game_over_visible, 1.0)
         pyglet.clock.unschedule(update)
@@ -79,6 +81,7 @@ def update(dt):
                 
 def game_over_visible(dt):
     game_over.opacity = 255
+    restart_button.opacity = 255
         
 def spawn(dt):
     if Dinosaur.dino_dist < 100:
@@ -108,6 +111,7 @@ def restart():
         obs.delete()
         game_objects.remove(obs)
     game_over.opacity = 0
+    restart_button.opacity = 0
     dino.y = 0
     dino.velocity_y = 0
     dino.image = Dinosaur.dino_running
@@ -128,6 +132,7 @@ def on_draw():
         score.draw()
     high.draw()
     game_over.draw()
+    restart_button.draw()
     
 @window.event
 def on_key_press(symbol, modifiers):
@@ -139,8 +144,12 @@ def on_key_press(symbol, modifiers):
             dino.image = pyglet.image.load('sprites/dinoStand.png')
         elif (symbol == key.DOWN) and (dino.y == 0):
             dino.image = Dinosaur.dino_down
-    if (game_over.opacity == 255):
-        restart()
+        
+@window.event
+def on_mouse_press(x, y, button, modifiers):
+    if(game_over.opacity == 255):
+        if(restart_button.collision(x, y)):
+            restart()
         
 @window.event
 def on_key_release(symbol, modifiers):
