@@ -21,14 +21,14 @@ class Ground(pyglet.sprite.Sprite):
     def update_ground(self, dt):
         whole_ground = image.load('sprites/ground.png')
         if self.isVisible and self.atOrigin:
-            if self.start + (math.floor(math.fabs(self.current_ground_speed * dt)) / 2) >= 2402:
+            if self.start + (math.floor(math.fabs(self.current_ground_speed * dt))) >= 2402:
                 self.isVisible = False
                 self.atOrigin = False
                 self.x = gameboard.window.width
                 self.start = 0
                 self.length = 2
             else:
-                self.start += math.floor(math.fabs(self.current_ground_speed * dt) / 2)
+                self.start += math.floor(math.fabs(self.current_ground_speed * dt))
                 self.length = gameboard.window.width
                 if self.start + self.length >= 2402:
                     self.length = 2402 - self.start
