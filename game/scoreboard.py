@@ -17,7 +17,7 @@ class Score(pyglet.sprite.Sprite):
     def update_score(self):
         self.image = Scoreboard.digitArray[math.floor((Dinosaur.dino_dist / (10**self.number)) % 10)]
         
-        #updating based on the parameter, not the distnace
+        #updating based on the parameter, not the distance
     def update_score_p(self, highscore):
         self.image = Scoreboard.digitArray[math.floor((highscore / (10**self.number)) % 10)]
             
