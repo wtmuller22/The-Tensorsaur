@@ -9,21 +9,21 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 
-distance_file = open("distanceToObstacle.txt", 'r')
+distance_file = open("logs/distanceToObstacle.txt", 'r')
 result_1 = [line.split(',') for line in distance_file]
-height_file = open("heightOfObstacle.txt", 'r')
+height_file = open("logs/heightOfObstacle.txt", 'r')
 result_2 = [line.split(',') for line in height_file]
-width_file = open("widthOfObstacle.txt", 'r')
+width_file = open("logs/widthOfObstacle.txt", 'r')
 result_3 = [line.split(',') for line in width_file]
-obstacle_y_file = open("obstacleYPosition.txt", 'r')
+obstacle_y_file = open("logs/obstacleYPosition.txt", 'r')
 result_4 = [line.split(',') for line in obstacle_y_file]
-speed_file = open("speed.txt", 'r')
+speed_file = open("logs/speed.txt", 'r')
 result_5 = [line.split(',') for line in speed_file]
-player_y_file = open("playerYPosition.txt", 'r')
+player_y_file = open("logs/playerYPosition.txt", 'r')
 result_6 = [line.split(',') for line in player_y_file]
-gap_file = open("gapBetweenObstacles.txt", 'r')
+gap_file = open("logs/gapBetweenObstacles.txt", 'r')
 result_7 = [line.split(',') for line in gap_file]
-state_file = open("playerState.txt", 'r')
+state_file = open("logs/playerState.txt", 'r')
 result_8 = [line.split(',') for line in state_file]
 #7 params
 #{distance to ob, height of ob, width of ob, bird height, speed, player y pos, gap between obs}

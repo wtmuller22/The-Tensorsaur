@@ -3,7 +3,7 @@ Created on Sep 7, 2018
 
 @author: wmuller, cpendery
 '''
-import pyglet, math, random, tensor
+import pyglet, math, random
 from ground import Ground
 from pyglet import image
 from scoreboard import Score
@@ -16,6 +16,7 @@ from cactus import Cactus
 from bird import Bird
 from lose import Lose
 from lose import Restart
+from data_logger import DataLogger
 
 #Creates a white window of a specific size
 window = pyglet.window.Window(fullscreen=True)
@@ -37,7 +38,12 @@ high.opacity = 0
 for score in high_score.board:
     score.opacity = 0
 
+dl = DataLogger(30)
+
 def update(dt):
+#logs all the values for the data
+    #PUT ALL THE ADD METHODS HERE
+    dl.logData()
 #Updates batch
     for obj in game_objects:
         obj.update(dt)
