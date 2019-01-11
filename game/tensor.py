@@ -25,6 +25,19 @@ gap_file = open("logs/gapBetweenObstacles.txt", 'r')
 result_7 = [line.split(',') for line in gap_file]
 state_file = open("logs/playerState.txt", 'r')
 result_8 = [line.split(',') for line in state_file]
+
+
+#Gets rid of last empty element due to end commas
+del result_1[0][-1]
+del result_2[0][-1]
+del result_3[0][-1]
+del result_4[0][-1]
+del result_5[0][-1]
+del result_6[0][-1]
+del result_7[0][-1]
+del result_8[0][-1]
+
+
 #7 params
 #{distance to ob, height of ob, width of ob, bird height, speed, player y pos, gap between obs}
 #3 lables

@@ -59,6 +59,7 @@ class DataLogger():
         self.txt_list.append(open("logs/playerYPosition.txt", 'w'))
         self.txt_list.append(open("logs/gapBetweenObstacles.txt", 'w'))
         self.txt_list.append(open("logs/playerState.txt", 'w'))
+        self.close_txt()
         
     def close_txt(self):
         self.txt_list[0].close()
