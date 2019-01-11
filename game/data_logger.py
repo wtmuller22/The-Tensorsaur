@@ -20,6 +20,10 @@ class DataLogger():
             self.dataQ.put(self.new_list)
         else:
             self.dataQ.put(self.new_list)
+            
+    def clear_queue(self):
+        while(not self.dataQ.empty()):
+            self.dataQ._get()
     
     #writes the data to the proper .txt files
     def write_data(self, toLog):
@@ -27,24 +31,34 @@ class DataLogger():
             self.open_txt()
             self.txt_open = True
             
-        self.txt_list[0].write("%s," % self.new_list[0])
-        self.txt_list[1].write("%s," % self.new_list[1])
-        self.txt_list[2].write("%s," % self.new_list[2])
-        self.txt_list[3].write("%s," % self.new_list[3])
-        self.txt_list[4].write("%s," % self.new_list[4])
-        self.txt_list[5].write("%s," % self.new_list[5])
-        self.txt_list[6].write("%s," % self.new_list[6])
-        self.txt_list[7].write("%s," % self.new_list[7])
+        self.txt_list[0].write("%.2f," % self.new_list[0])
+        self.txt_list[1].write("%.2f," % self.new_list[1])
+        self.txt_list[2].write("%.2f," % self.new_list[2])
+        self.txt_list[3].write("%.2f," % self.new_list[3])
+        self.txt_list[4].write("%i," % self.new_list[4])
+        self.txt_list[5].write("%.2f," % self.new_list[5])
+        self.txt_list[6].write("%.2f," % self.new_list[6])
+        self.txt_list[7].write("%i," % self.new_list[7])
         
     def open_txt(self):
-        self.txt_list[0] = open("logs/distanceToObstacle.txt", 'a+')
-        self.txt_list[1] = open("logs/heightOfObstacle.txt", 'a+')
-        self.txt_list[2] = open("logs/widthOfObstacle.txt", 'a+')
-        self.txt_list[3] = open("logs/obstacleYPosition.txt", 'a+')
-        self.txt_list[4] = open("logs/speed.txt", 'a+')
-        self.txt_list[5] = open("logs/distanceToObstacle.txt", 'a+')
-        self.txt_list[6] = open("logs/gapBetweenObstacles.txt", 'a+')
-        self.txt_list[7] = open("logs/playerState.txt", 'a+')
+        self.txt_list.append(open("logs/distanceToObstacle.txt", 'a'))
+        self.txt_list.append(open("logs/heightOfObstacle.txt", 'a'))
+        self.txt_list.append(open("logs/widthOfObstacle.txt", 'a'))
+        self.txt_list.append(open("logs/obstacleYPosition.txt", 'a'))
+        self.txt_list.append(open("logs/speed.txt", 'a'))
+        self.txt_list.append(open("logs/playerYPosition.txt", 'a'))
+        self.txt_list.append(open("logs/gapBetweenObstacles.txt", 'a'))
+        self.txt_list.append(open("logs/playerState.txt", 'a'))
+        
+    def clear_logs(self):
+        self.txt_list.append(open("logs/distanceToObstacle.txt", 'w'))
+        self.txt_list.append(open("logs/heightOfObstacle.txt", 'w'))
+        self.txt_list.append(open("logs/widthOfObstacle.txt", 'w'))
+        self.txt_list.append(open("logs/obstacleYPosition.txt", 'w'))
+        self.txt_list.append(open("logs/speed.txt", 'w'))
+        self.txt_list.append(open("logs/playerYPosition.txt", 'w'))
+        self.txt_list.append(open("logs/gapBetweenObstacles.txt", 'w'))
+        self.txt_list.append(open("logs/playerState.txt", 'w'))
         
     def close_txt(self):
         self.txt_list[0].close()
@@ -73,3 +87,6 @@ class DataLogger():
         self.new_list[6] = var
     def add_player_state(self,var):
         self.new_list[7] = var
+        
+    def set_new_list(self,var):
+        self.new_list = var

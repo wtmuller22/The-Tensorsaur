@@ -19,6 +19,9 @@ from lose import Restart
 from data_logger import DataLogger
 
 #Creates a white window of a specific size
+#fullscreen=True
+#--used for debugging
+#visible=False
 window = pyglet.window.Window(fullscreen=True)
 pyglet.gl.glClearColor(1, 1, 1, 1)
 
@@ -38,12 +41,16 @@ high.opacity = 0
 for score in high_score.board:
     score.opacity = 0
 
-dl = DataLogger(30)
+dl = DataLogger(5)
 
 def update(dt):
 #logs all the values for the data
-    #PUT ALL THE ADD METHODS HERE
-    dl.logData()
+    if(dino.image != Dinosaur.dino_dead):
+        l = get_current_data()
+        dl.set_new_list(l)
+        dl.log_data()
+    else:
+        dl.clear_queue()
 #Updates batch
     for obj in game_objects:
         obj.update(dt)
@@ -84,6 +91,34 @@ def update(dt):
         for obs in obstacles:
             if isinstance(obs, Bird):
                 obs.image = Bird.bird_flapped
+
+def get_current_data():
+    obstacles = game_objects[1:]
+    if len(obstacles) > 0:
+        distance = obstacles[0].x - dino.x
+        if len(obstacles) > 1:
+            gap = obstacles[1].x - obstacles[0].x
+        else:
+            gap = window.width - obstacles[0].x
+        height = obstacles[0].height
+        obstacle_y = obstacles[0].y
+        width = obstacles[0].width
+    else:
+        distance = window.width
+        gap = window.width
+        height = 0
+        obstacle_y = 0
+        width = 0
+    player_y = dino.y
+    speed = Ground.current_ground_speed
+    if dino.image == Dinosaur.dino_running or dino.y != 0:
+        player_state = 0
+    #the jump event will be added during the up arrow event
+    #elif dino.image == pyglet.image.load('sprites/dinoStand.png'):
+    #    player_state = 2
+    else:
+        player_state = 1
+    return [distance,height, width, obstacle_y,speed,player_y,gap,player_state]
                 
 def game_over_visible(dt):
     game_over.opacity = 255
@@ -150,6 +185,11 @@ def on_key_press(symbol, modifiers):
             dino.image = pyglet.image.load('sprites/dinoStand.png')
         elif (symbol == key.DOWN) and (dino.y == 0):
             dino.image = Dinosaur.dino_down
+    
+    l = get_current_data()
+    dl.set_new_list(l)
+    dl.add_player_state(2) #setting it to be a jump
+    dl.log_data()
         
 @window.event
 def on_mouse_press(x, y, button, modifiers):
