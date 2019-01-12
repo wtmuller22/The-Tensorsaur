@@ -183,13 +183,12 @@ def on_key_press(symbol, modifiers):
             dino.velocity_y = 1200
             dino.isJumping = True
             dino.image = pyglet.image.load('sprites/dinoStand.png')
+            l = get_current_data()
+            dl.set_new_list(l)
+            dl.add_player_state(2) #setting it to be a jump
+            dl.log_data()
         elif (symbol == key.DOWN) and (dino.y == 0):
             dino.image = Dinosaur.dino_down
-    
-    l = get_current_data()
-    dl.set_new_list(l)
-    dl.add_player_state(2) #setting it to be a jump
-    dl.log_data()
         
 @window.event
 def on_mouse_press(x, y, button, modifiers):

@@ -8,6 +8,9 @@ Created on Dec 31, 2018
 import tensorflow as tf
 import numpy as np
 import pandas as pd
+from sklearn import metrics
+from tensorflow.python.data import Dataset
+import math
 
 distance_file = open("logs/distanceToObstacle.txt", 'r')
 result_1 = [line.split(',') for line in distance_file]
@@ -51,8 +54,86 @@ player_y = pd.Series([float(num) for num in result_6[0]])
 obstacle_gap = pd.Series([float(num) for num in result_7[0]])
 labels = pd.Series([int(num) for num in result_8[0]])
 
-playing_data = pd.DataFrame({ 'Distance to Obstacle': distance_to, 'Height of Obstacle': height_of,
-                             'Width of Obstacle': width_of, 'Obstacle y Position': obstacle_y, 
-                             'Speed': speed, 'Player y Position': player_y, 
-                             'Gap Between Obstacles': obstacle_gap, 'Player State': labels})
-print(playing_data)
+playing_data = pd.DataFrame({ 'distance_to_obstacle': distance_to, 'height_of_obstacle': height_of,
+                             'width_of_obstacle': width_of, 'obstacle_y_position': obstacle_y, 
+                             'speed': speed, 'player_y_position': player_y, 
+                             'gap_between_obstacles': obstacle_gap, 'player_state': labels})
+#print(playing_data)
+
+#Randomizes data to help SGD
+playing_data = playing_data.reindex(np.random.permutation(playing_data.index))
+
+def preprocess_features(playing_data):
+    selected_features = playing_data[["distance_to_obstacle", "height_of_obstacle", 
+                                      "width_of_obstacle", "obstacle_y_position", "speed", "player_y_position",
+                                      "gap_between_obstacles"]]
+    processed_features = selected_features.copy()
+    return processed_features
+
+def preprocess_targets(playing_data):
+    output_targets = pd.DataFrame()
+    output_targets["player_state"] = playing_data["player_state"]
+    return output_targets
+
+training_examples = preprocess_features(playing_data.head(60000))
+training_targets = preprocess_targets(playing_data.head(60000))
+validation_examples = preprocess_features(playing_data.tail(20000))
+validation_targets = preprocess_targets(playing_data.tail(20000))
+
+def my_input_fn(features, targets, batch_size=1, shuffle=True, num_epochs=None):
+    features = {key:np.array(value) for key,value in dict(features).items()}
+    ds = Dataset.from_tensor_slices((features, targets))
+    ds = ds.batch(batch_size).repeat(num_epochs)
+    if shuffle:
+        ds = ds.shuffle(10000)
+    features, labels = ds.make_one_shot_iterator().get_next()
+    return features, labels
+
+def construct_feature_columns(input_features):
+    return set([tf.feature_column.numeric_column(my_feature) for my_feature in input_features])
+
+def train_model(learning_rate, steps, batch_size, training_examples, training_targets, validation_examples, validation_targets):
+    periods = 10
+    steps_per_period = steps / periods
+    
+    my_optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
+    my_optimizer = tf.contrib.estimator.clip_gradients_by_norm(my_optimizer, 5.0)
+    linear_regressor = tf.estimator.LinearRegressor(feature_columns=construct_feature_columns(training_examples),
+                                                    optimizer=my_optimizer)
+    
+    training_input_fn = lambda: my_input_fn(training_examples, training_targets["player_state"], batch_size=batch_size)
+    predict_training_input_fn = lambda: my_input_fn(training_examples, training_targets["player_state"], shuffle=False, num_epochs=1)
+    predict_validation_input_fn = lambda: my_input_fn(validation_examples, validation_targets["player_state"], shuffle=False, num_epochs=1)
+    
+    print("Training in Progress...")
+    print("RMSE (training data):")
+    training_rmse = []
+    validation_rmse = []
+    for period in range(0, periods):
+        linear_regressor.train(input_fn=training_input_fn, steps=steps_per_period)
+        
+        training_predictions = linear_regressor.predict(input_fn=predict_training_input_fn)
+        training_predictions = np.array([item['predictions'][0] for item in training_predictions])
+        
+        validation_predictions = linear_regressor.predict(input_fn=predict_validation_input_fn)
+        validation_predictions = np.array([item['predictions'][0] for item in validation_predictions])
+        
+        training_root_mean_squared_error = math.sqrt(metrics.mean_squared_error(training_predictions, training_targets))
+        validation_root_mean_squared_error = math.sqrt(metrics.mean_squared_error(validation_predictions, validation_targets))
+        print("Period %02d : %0.2f" % (period, training_root_mean_squared_error))
+        print("Validation: %0.2f" % (validation_root_mean_squared_error))
+        training_rmse.append(training_root_mean_squared_error)
+        validation_rmse.append(validation_root_mean_squared_error)
+    print("Model Training Complete.")
+    
+    return linear_regressor
+
+#train model
+
+linear_regressor = train_model(learning_rate=0.00002,
+                                steps=20, 
+                                batch_size=10,
+                                training_examples=training_examples, 
+                                training_targets=training_targets, 
+                                validation_examples=validation_examples, 
+                                validation_targets=validation_targets)
