@@ -141,7 +141,7 @@ class DataCleaner():
             del(self.data_pieces[toRemove])
             self.count1 -= 1
         else:
-            toRemove = random.randint(self.count0 + self.count1 - 1, self.count0 + self.count1 + self.count2 - 1)
+            toRemove = random.randint(self.count0 + self.count1, self.count0 + self.count1 + self.count2 - 1)
             del(self.data_pieces[toRemove])
             self.count2 -= 1
             
