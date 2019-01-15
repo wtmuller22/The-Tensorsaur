@@ -60,8 +60,12 @@ playing_data = pd.DataFrame({ 'distance_to_obstacle': distance_to, 'height_of_ob
                              'gap_between_obstacles': obstacle_gap, 'player_state': labels})
 #print(playing_data)
 
+def return_fn(features):
+    return features
+
 def make_prediction(features):
-    prediction = linear_classifier.predict(features) 
+    return_function = lambda: return_fn(features)
+    prediction = list(linear_classifier.predict(input_fn=return_function))
     return prediction
 
 #Randomizes data to help SGD

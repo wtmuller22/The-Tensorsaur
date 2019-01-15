@@ -18,6 +18,7 @@ from lose import Lose
 from lose import Restart
 from data_logger import DataLogger
 from pynput.keyboard import Key, Controller
+import tensorflow as tf
 
 #Controls whether AI is playing
 tensorsaur = True
@@ -62,6 +63,7 @@ def update(dt):
     else:
         features = get_current_data()
         prediction = tensor.make_prediction(features)
+        print(prediction)
         if prediction == 1:
             keyboard.press(Key.down)
         elif prediction == 2:
@@ -140,13 +142,13 @@ def get_current_data():
     if not tensorsaur:
         return [distance,height, width, obstacle_y,speed,player_y,gap,player_state]
     else:
-        return {'distance_to_obstacle': [distance], 
-                'height_of_obstacle': [height], 
-                'width_of_obstacle': [width], 
-                'obstacle_y_position': [obstacle_y], 
-                'speed': [speed], 
-                'player_y_position': [player_y],
-                'gap_between_obstacles': [gap]}
+        return {"distance_to_obstacle": tf.constant(distance, shape=[1, 0], name="distance_to_obstacle"), 
+                "height_of_obstacle": tf.constant(height, shape=[1, 0], name="height_of_obstacle"),
+                "width_of_obstacle": tf.constant(width, shape=[1, 0], name="width_of_obstacle"), 
+                "obstacle_y_position": tf.constant(obstacle_y, shape=[1, 0], name="obstacle_y_position"), 
+                "speed": tf.constant(speed, shape=[1, 0], name="speed"), 
+                "player_y_position": tf.constant(player_y, shape=[1, 0], name="player_y_position"), 
+                "gap_between_obstacles": tf.constant(gap, shape=[1, 0], name="gap_between_obstacles")}
                 
 def game_over_visible(dt):
     game_over.opacity = 255
