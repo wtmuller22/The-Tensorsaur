@@ -61,8 +61,7 @@ playing_data = pd.DataFrame({ 'distance_to_obstacle': distance_to, 'height_of_ob
 #print(playing_data)
 
 def make_prediction(features):
-    game_predict_fn = lambda: my_input_fn(preprocess_features(pd.DataFrame(features)), preprocess_targets(playing_data.tail(1))["player_state"], shuffle=False, num_epochs=1)
-    prediction = list(linear_classifier.predict(input_fn=game_predict_fn))[0]
+    prediction = linear_classifier.predict(features) 
     return prediction
 
 #Randomizes data to help SGD

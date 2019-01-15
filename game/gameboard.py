@@ -20,7 +20,7 @@ from data_logger import DataLogger
 from pynput.keyboard import Key, Controller
 
 #Controls whether AI is playing
-tensorsaur = False
+tensorsaur = True
 if tensorsaur:
     import tensor
     keyboard = Controller()
