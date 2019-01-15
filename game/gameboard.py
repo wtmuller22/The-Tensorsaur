@@ -17,7 +17,14 @@ from bird import Bird
 from lose import Lose
 from lose import Restart
 from data_logger import DataLogger
+from pynput.keyboard import Key, Controller
 
+#Controls whether AI is playing
+tensorsaur = False
+if tensorsaur:
+    import tensor
+    keyboard = Controller()
+    
 #Creates a white window of a specific size
 #fullscreen=True
 #--used for debugging
@@ -45,12 +52,24 @@ dl = DataLogger(5)
 
 def update(dt):
 #logs all the values for the data
-    if(dino.image != Dinosaur.dino_dead):
-        l = get_current_data()
-        dl.set_new_list(l)
-        dl.log_data()
+    if not tensorsaur:
+        if(dino.image != Dinosaur.dino_dead):
+            l = get_current_data()
+            dl.set_new_list(l)
+            dl.log_data()
+        else:
+            dl.clear_queue()
     else:
-        dl.clear_queue()
+        features = get_current_data()
+        prediction = tensor.make_prediction(features)
+        if prediction == 1:
+            keyboard.press(Key.down)
+        elif prediction == 2:
+            keyboard.press(Key.up)
+            keyboard.release(Key.up)
+        elif dino.image == Dinosaur.dino_down:
+            keyboard.release(Key.down)
+            
 #Updates batch
     for obj in game_objects:
         obj.update(dt)
@@ -118,7 +137,16 @@ def get_current_data():
     #    player_state = 2
     else:
         player_state = 1
-    return [distance,height, width, obstacle_y,speed,player_y,gap,player_state]
+    if not tensorsaur:
+        return [distance,height, width, obstacle_y,speed,player_y,gap,player_state]
+    else:
+        return {'distance_to_obstacle': [distance], 
+                'height_of_obstacle': [height], 
+                'width_of_obstacle': [width], 
+                'obstacle_y_position': [obstacle_y], 
+                'speed': [speed], 
+                'player_y_position': [player_y],
+                'gap_between_obstacles': [gap]}
                 
 def game_over_visible(dt):
     game_over.opacity = 255
@@ -177,16 +205,17 @@ def on_draw():
     
 @window.event
 def on_key_press(symbol, modifiers):
-    if dino.image == Dinosaur.dino_running or dino.image == Dinosaur.dino_down:
+    if (dino.image == Dinosaur.dino_running or dino.image == Dinosaur.dino_down):
         if (symbol == key.UP or symbol == key.SPACE) and (dino.y == 0):
             dino.y = 1
             dino.velocity_y = 1200
             dino.isJumping = True
             dino.image = pyglet.image.load('sprites/dinoStand.png')
-            l = get_current_data()
-            dl.set_new_list(l)
-            dl.add_player_state(2) #setting it to be a jump
-            dl.log_data()
+            if not tensorsaur:
+                l = get_current_data()
+                dl.set_new_list(l)
+                dl.add_player_state(2) #setting it to be a jump
+                dl.log_data()
         elif (symbol == key.DOWN) and (dino.y == 0):
             dino.image = Dinosaur.dino_down
         

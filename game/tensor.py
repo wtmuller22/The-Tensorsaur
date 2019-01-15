@@ -60,6 +60,11 @@ playing_data = pd.DataFrame({ 'distance_to_obstacle': distance_to, 'height_of_ob
                              'gap_between_obstacles': obstacle_gap, 'player_state': labels})
 #print(playing_data)
 
+def make_prediction(features):
+    game_predict_fn = lambda: my_input_fn(preprocess_features(pd.DataFrame(features)), preprocess_targets(playing_data.tail(1))["player_state"], shuffle=False, num_epochs=1)
+    prediction = list(linear_classifier.predict(input_fn=game_predict_fn))[0]
+    return prediction
+
 #Randomizes data to help SGD
 playing_data = playing_data.reindex(np.random.permutation(playing_data.index))
 
@@ -141,9 +146,9 @@ def train_model(learning_rate, steps, batch_size, training_examples, training_ta
 
 #train model
 
-linear_classifier = train_model(learning_rate=0.0001,
-                                steps=2000, 
-                                batch_size=100,
+linear_classifier = train_model(learning_rate=0.0002,
+                                steps=3000, 
+                                batch_size=30,
                                 training_examples=training_examples, 
                                 training_targets=training_targets, 
                                 validation_examples=validation_examples, 
