@@ -60,13 +60,25 @@ playing_data = pd.DataFrame({ 'distance_to_obstacle': distance_to, 'height_of_ob
                              'gap_between_obstacles': obstacle_gap, 'player_state': labels})
 #print(playing_data)
 
-def return_fn(features):
-    return features
+def return_fn(f):
+    features = {'distance_to_obstacle': np.array([f[0]]),
+                'height_of_obstacle':  np.array([f[1]]),
+                'width_of_obstacle': np.array([f[2]]),
+                'obstacle_y_position':  np.array([f[3]]),
+                'speed': np.array([f[4]]),
+                'player_y_position':  np.array([f[5]]),
+                'gap_between_obstacles': np.array([f[6]])}
+    labels = np.array([0])
+    dset = Dataset.from_tensor_slices((dict(features), labels))
+    dset = dset.batch(1)
+    features, labels = dset.make_one_shot_iterator().get_next()
+    return features, labels
 
 def make_prediction(features):
     return_function = lambda: return_fn(features)
     prediction = list(linear_classifier.predict(input_fn=return_function))
-    return prediction
+    state = prediction[0]['class_ids'][0]
+    return state
 
 #Randomizes data to help SGD
 playing_data = playing_data.reindex(np.random.permutation(playing_data.index))
@@ -83,10 +95,10 @@ def preprocess_targets(playing_data):
     output_targets["player_state"] = playing_data["player_state"]
     return output_targets
 
-training_examples = preprocess_features(playing_data.head(5009))
-training_targets = preprocess_targets(playing_data.head(5009))
-validation_examples = preprocess_features(playing_data.tail(1000))
-validation_targets = preprocess_targets(playing_data.tail(1000))
+training_examples = preprocess_features(playing_data.head(4861))
+training_targets = preprocess_targets(playing_data.head(4861))
+validation_examples = preprocess_features(playing_data.tail(2000))
+validation_targets = preprocess_targets(playing_data.tail(2000))
 
 def my_input_fn(features, targets, batch_size=1, shuffle=True, num_epochs=None):
     features = {key:np.array(value) for key,value in dict(features).items()}

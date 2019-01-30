@@ -17,14 +17,12 @@ from bird import Bird
 from lose import Lose
 from lose import Restart
 from data_logger import DataLogger
-from pynput.keyboard import Key, Controller
-import tensorflow as tf
+from email.policy import default
 
 #Controls whether AI is playing
 tensorsaur = True
 if tensorsaur:
     import tensor
-    keyboard = Controller()
     
 #Creates a white window of a specific size
 #fullscreen=True
@@ -65,12 +63,11 @@ def update(dt):
         prediction = tensor.make_prediction(features)
         print(prediction)
         if prediction == 1:
-            keyboard.press(Key.down)
+            on_key_press(symbol=key.DOWN, modifiers=None)
         elif prediction == 2:
-            keyboard.press(Key.up)
-            keyboard.release(Key.up)
+            on_key_press(symbol=key.UP, modifiers=None)
         elif dino.image == Dinosaur.dino_down:
-            keyboard.release(Key.down)
+            on_key_release(symbol=key.DOWN, modifiers=None)
             
 #Updates batch
     for obj in game_objects:
@@ -142,13 +139,7 @@ def get_current_data():
     if not tensorsaur:
         return [distance,height, width, obstacle_y,speed,player_y,gap,player_state]
     else:
-        return {"distance_to_obstacle": tf.constant(distance, shape=[1, 0], name="distance_to_obstacle"), 
-                "height_of_obstacle": tf.constant(height, shape=[1, 0], name="height_of_obstacle"),
-                "width_of_obstacle": tf.constant(width, shape=[1, 0], name="width_of_obstacle"), 
-                "obstacle_y_position": tf.constant(obstacle_y, shape=[1, 0], name="obstacle_y_position"), 
-                "speed": tf.constant(speed, shape=[1, 0], name="speed"), 
-                "player_y_position": tf.constant(player_y, shape=[1, 0], name="player_y_position"), 
-                "gap_between_obstacles": tf.constant(gap, shape=[1, 0], name="gap_between_obstacles")}
+        return [distance,height, width, obstacle_y,speed,player_y,gap]
                 
 def game_over_visible(dt):
     game_over.opacity = 255
