@@ -83,7 +83,10 @@ def update(dt):
     for obj in game_objects:
         obj.update(dt)
 #Updates distance traveled
-    Dinosaur.dino_dist += (math.fabs(Ground.current_ground_speed * dt)) / 100
+    if(not FRAMES == 1):
+        Dinosaur.dino_dist += (math.fabs(Ground.current_ground_speed * dt)) / 100
+    else:
+        Dinosaur.dino_dist += 1
 #Updates/Flashes score
     for score in score_board.board:
         if not score.isFlashing:
@@ -178,7 +181,7 @@ def checkCollisions(dino, game_objects):
 
 def restart():
     Dinosaur.dino_dist = 0.0
-    Ground.current_ground_speed = -800.0
+    Ground.current_ground_speed = (-800.0/60) / FRAMES
     obstacles = game_objects[1:]
     for obs in obstacles:
         obs.delete()
