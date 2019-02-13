@@ -40,12 +40,14 @@ class Dinosaur(pyglet.sprite.Sprite):
     def __init__(self, FRAMES):
         super().__init__(img=Dinosaur.dino_running)
         self.velocity_y = 0.0
-        self.acceleration_y = (-3500)
+        self.acceleration_y = -3500 #-.6 for 1 frame
         self.isJumping = False
         self.x = 20
     
     def update(self, dt):
         if (self.y > 0):
+            print("Y Pos: {}".format(self.y))
+            print("\n")
             self.velocity_y += self.acceleration_y * dt
             if (self.y + self.velocity_y * dt) < 0:
                 self.velocity_y = 0

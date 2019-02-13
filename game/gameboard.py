@@ -28,7 +28,7 @@ dataLog = False
 
 #Controls the framerate of the game
 #Must be set in ground too
-FRAMES = 1 #per second
+FRAMES = 60 #per second
 
 #converts to fps for code
 FRAMES = 1.0/FRAMES
@@ -215,7 +215,7 @@ def on_key_press(symbol, modifiers):
     if (dino.image == Dinosaur.dino_running or dino.image == Dinosaur.dino_down):
         if (symbol == key.UP or symbol == key.SPACE) and (dino.y == 0):
             dino.y = 1
-            dino.velocity_y = (1200)
+            dino.velocity_y = 1200 #(12) for 1 frame
             dino.isJumping = True
             dino.image = pyglet.image.load('sprites/dinoStand.png')
             if not tensorsaur:
