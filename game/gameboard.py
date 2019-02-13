@@ -17,12 +17,21 @@ from bird import Bird
 from lose import Lose
 from lose import Restart
 from data_logger import DataLogger
-from email.policy import default
 
 #Controls whether AI is playing
-tensorsaur = True
+tensorsaur = False
 if tensorsaur:
     import tensor
+    
+#Controls when data is being logged
+dataLog = False
+
+#Controls the framerate of the game
+#Must be set in ground too
+FRAMES = 1 #per second
+
+#converts to fps for code
+FRAMES = 1.0/FRAMES
     
 #Creates a white window of a specific size
 #fullscreen=True
@@ -34,7 +43,7 @@ pyglet.gl.glClearColor(1, 1, 1, 1)
 #Loads and instantiates objects
 game_over = Lose()
 restart_button = Restart()
-dino = Dinosaur()
+dino = Dinosaur(FRAMES)
 score_board = Scoreboard()
 high_score = HighScoreboard()
 game_objects = [dino]
@@ -55,7 +64,8 @@ def update(dt):
         if(dino.image != Dinosaur.dino_dead):
             l = get_current_data()
             dl.set_new_list(l)
-            dl.log_data()
+            if(dataLog):
+                dl.log_data()
         else:
             dl.clear_queue()
     else:
@@ -154,8 +164,9 @@ def spawn(dt):
             game_objects.append(Bird())
         else:
             game_objects.append(Cactus())
-    num = random.randint(90, 126)
-    pyglet.clock.schedule_once(spawn, num / 100)
+    num = random.randint(50, 100)
+    #numbers were 90 126
+    pyglet.clock.schedule_once(spawn, num * FRAMES)
         
     
 #returns false if the dino is not in collision
@@ -177,8 +188,8 @@ def restart():
     dino.y = 0
     dino.velocity_y = 0
     dino.image = Dinosaur.dino_running
-    pyglet.clock.schedule_once(spawn, 2.0)
-    pyglet.clock.schedule_interval(update, 1/30.0)
+    pyglet.clock.schedule_once(spawn, FRAMES * 120)
+    pyglet.clock.schedule_interval(update, FRAMES)
             
 @window.event
 def on_draw():
@@ -186,8 +197,8 @@ def on_draw():
     pyglet.sprite.Sprite(pyglet.image.load('sprites/ground.png')).draw()
     moving_ground.draw()
     moving_ground_2.draw()
-    for object in game_objects:
-        object.draw()
+    for obj in game_objects:
+        obj.draw()
     for score in score_board.board:
         score.draw()
     for score in high_score.board:
@@ -201,14 +212,15 @@ def on_key_press(symbol, modifiers):
     if (dino.image == Dinosaur.dino_running or dino.image == Dinosaur.dino_down):
         if (symbol == key.UP or symbol == key.SPACE) and (dino.y == 0):
             dino.y = 1
-            dino.velocity_y = 1200
+            dino.velocity_y = (1200)
             dino.isJumping = True
             dino.image = pyglet.image.load('sprites/dinoStand.png')
             if not tensorsaur:
                 l = get_current_data()
                 dl.set_new_list(l)
                 dl.add_player_state(2) #setting it to be a jump
-                dl.log_data()
+                if(dataLog):
+                    dl.log_data()
         elif (symbol == key.DOWN) and (dino.y == 0):
             dino.image = Dinosaur.dino_down
         
@@ -223,6 +235,6 @@ def on_key_release(symbol, modifiers):
     if (symbol == key.DOWN) and (dino.image == Dinosaur.dino_down):
         dino.image = Dinosaur.dino_running
     
-pyglet.clock.schedule_once(spawn, 2.0)
-pyglet.clock.schedule_interval(update, 1/60.0)
+pyglet.clock.schedule_once(spawn, FRAMES * 2)
+pyglet.clock.schedule_interval(update, FRAMES)
 pyglet.app.run()

@@ -9,7 +9,13 @@ Created on Sep 21, 2018
 #Ground class
 class Ground(pyglet.sprite.Sprite):
     
-    current_ground_speed = -800.0
+    FRAMES = 1 #per second
+    
+    
+    
+    #converts to fps for code
+    FRAMES = 1.0/FRAMES
+    current_ground_speed = (-800.0/60) / FRAMES
     
     def __init__(self, vis, at, *args, **kwargs):
         super().__init__(*args, **kwargs)

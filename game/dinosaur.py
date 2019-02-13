@@ -10,6 +10,7 @@ Created on Sep 7, 2018
 #Dino Class
 class Dinosaur(pyglet.sprite.Sprite):
     
+    
     def update_high_score(score):
         f = open("highscore.txt", 'w')
         f.write('%d' % score)
@@ -21,6 +22,13 @@ class Dinosaur(pyglet.sprite.Sprite):
         f.close()
         return toReturn
     
+    #Set Frames
+    FRAMES = 1
+    
+    
+    #converts to fps for code
+    FRAMES = 1.0/FRAMES
+    
     high_score = get_high_score()
     dino_dist = 0.0
     dino_running = image.load_animation('sprites/dinomation.gif', None, None)
@@ -29,10 +37,10 @@ class Dinosaur(pyglet.sprite.Sprite):
     dino_pause_up = image.load('sprites/dinoLeftUp.png')
     dino_pause_down = image.load('sprites/dinoDownLeftUp.png')
     
-    def __init__(self):
+    def __init__(self, FRAMES):
         super().__init__(img=Dinosaur.dino_running)
         self.velocity_y = 0.0
-        self.acceleration_y = -3500
+        self.acceleration_y = (-3500)
         self.isJumping = False
         self.x = 20
     
