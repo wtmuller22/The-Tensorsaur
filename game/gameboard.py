@@ -28,7 +28,7 @@ dataLog = False
 
 #Controls the framerate of the game
 #Must be set in ground too
-FRAMES = 60 #per second
+FRAMES = 1 #per second
 
 #converts to fps for code
 FRAMES = 1.0/FRAMES
@@ -39,6 +39,11 @@ FRAMES = 1.0/FRAMES
 #visible=False
 window = pyglet.window.Window(fullscreen=True)
 pyglet.gl.glClearColor(1, 1, 1, 1)
+
+#frameCount
+curr_frame = 0
+#used for creating seperating the frames from different games
+run_number = 0
 
 #Loads and instantiates objects
 game_over = Lose()
@@ -122,6 +127,7 @@ def update(dt):
         for obs in obstacles:
             if isinstance(obs, Bird):
                 obs.image = Bird.bird_flapped
+    screenshot()
 
 def get_current_data():
     obstacles = game_objects[1:]
@@ -179,6 +185,12 @@ def checkCollisions(dino, game_objects):
             return True
     return False
 
+def screenshot():
+    global curr_frame, run_number
+    pyglet.image.get_buffer_manager().get_color_buffer().save('frames/frame{}_run{}.png'.format(curr_frame, run_number))
+    curr_frame += 1
+    
+    
 def restart():
     Dinosaur.dino_dist = 0.0
     Ground.current_ground_speed = (-800.0/60) / FRAMES
@@ -210,12 +222,13 @@ def on_draw():
     game_over.draw()
     restart_button.draw()
     
+    
 @window.event
 def on_key_press(symbol, modifiers):
     if (dino.image == Dinosaur.dino_running or dino.image == Dinosaur.dino_down):
         if (symbol == key.UP or symbol == key.SPACE) and (dino.y == 0):
             dino.y = 1
-            dino.velocity_y = 1200 #(12) for 1 frame
+            dino.velocity_y = 12#1200 #(12) for 1 frame
             dino.isJumping = True
             dino.image = pyglet.image.load('sprites/dinoStand.png')
             if not tensorsaur:

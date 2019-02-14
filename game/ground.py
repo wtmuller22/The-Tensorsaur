@@ -9,7 +9,7 @@ Created on Sep 21, 2018
 #Ground class
 class Ground(pyglet.sprite.Sprite):
     
-    FRAMES = 60 #per second
+    FRAMES = 1 #per second
     
     
     
