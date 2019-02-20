@@ -10,23 +10,9 @@ class DinoEnv(gym.Env, utils.EzPickle):
 
     def __init__(self):
         self.gravity = 9.8
-        self.massbody = 1.0
+        self.dinomass = 1.0
         self.kinematics_integrator = 'euler'
-        self.time = 0
-
-        # Angle at which to fail the episode
-        self.theta_threshold_radians = 12 * 2 * math.pi / 360
-        self.x_threshold = 2.4
-
-        # Angle limit set to 2 * theta_threshold_radians so failing observation is still within bounds
-        high = np.array([
-            self.x_threshold * 2,
-            np.finfo(np.float32).max,
-            self.theta_threshold_radians * 2,
-            np.finfo(np.float32).max])
-
-        self.action_space = spaces.Discrete(3)
-        self.observation_space = spaces.Box(-high, high, dtype=np.float32)
+        self.tau = 0.02
 
         self.seed()
         self.viewer = None
@@ -67,21 +53,18 @@ class DinoEnv(gym.Env, utils.EzPickle):
         screen_width = 600
         screen_height = 400
 
+        dinowidth = 20.0
+        dinoheight = 100.0
+
         world_width = self.x_threshold*2
         scale = screen_width/world_width
-        carty = 100 # TOP OF CART
-        polewidth = 10.0
-        polelen = scale * (2 * self.length)
-        cartwidth = 50.0
-        cartheight = 100.0
 
         if self.viewer is None:
             from gym.envs.classic_control import rendering
             self.viewer = rendering.Viewer(screen_width, screen_height)
-            l,r,t,b = -cartwidth/2, cartwidth/2, cartheight/2, -cartheight/2
-            axleoffset =cartheight/4.0
-            cart = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
-            self.viewer.add_geom(cart)
+            l,r,t,b = -dinowidth/2, dinowidth/2, dinoheight/2, -dinoheight/2
+            dino = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
+            self.viewer.add_geom(dino)
 
         if self.state is None: return None
 
