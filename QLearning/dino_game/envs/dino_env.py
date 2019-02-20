@@ -7,33 +7,29 @@ import pdb
 #from dino_dynam import Dinosaur
 
 class DinoEnv(gym.Env):
+    """ Actions:
+        Type: Discrete(2)
+        Num Action
+        0   Stay
+        1   Jump 
+
+        Obstacles:
+        Type: Tall(0), Long(1)
+        Parameters as Tuple:
+        (type, x-coord, y-coord, height, width) 
+
+        Jumps are only possible on the ground, if not on the ground, then points are reduced """
     metadata = {
         'render.modes': ['human', 'rgb_array'],
         'video.frames_per_second' : 50
     }
 
     def __init__(self):
-        self.gravity = 9.8
-        self.masscart = 1.0
-        #self.masspole = 0.1
-        #self.total_mass = (self.masspole + self.masscart)
-        #self.length = 0.5 # actually half the pole's length
-        #self.polemass_length = (self.masspole * self.length)
-        #self.force_mag = 10.0
+        self.obstacle_speed = 20
+        self.gravity = 3.1 #random value
+        self.massdino = 1.0
         self.tau = 0.02  # seconds between state updates
         self.kinematics_integrator = 'euler'
-
-        # # Angle at which to fail the episode
-        # self.theta_threshold_radians = 12 * 2 * math.pi / 360
-        # self.x_threshold = 2.4
-
-        # # Angle limit set to 2 * theta_threshold_radians so failing observation is still within bounds
-        # high = np.array([
-        #     self.x_threshold * 2,
-        #     np.finfo(np.float32).max,
-        #     self.theta_threshold_radians * 2,
-        #     np.finfo(np.float32).max])
-
         self.action_space = spaces.Discrete(2)
         # self.observation_space = spaces.Box(-high, high, dtype=np.float32)
 
@@ -42,6 +38,18 @@ class DinoEnv(gym.Env):
         self.state = None
 
         self.steps_beyond_done = None
+
+        self.dinox = 100
+        self.dinoy = 70
+        self.dinovy = 0
+        self.dinoay = 0
+
+        self.obstacles = []
+
+        self.dinowidth = 30.0
+        self.dinoheight = 60.0
+
+        self.time = 0
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -59,56 +67,90 @@ class DinoEnv(gym.Env):
         screen_width = 600
         screen_height = 400
 
-        world_width = 60#self.x_threshold*2
+        world_width = 60
         scale = screen_width/world_width
-        carty = 100 # TOP OF CART
-        #polewidth = 10.0
-        #polelen = scale * (2 * self.length)
-        cartwidth = 30.0
-        cartheight = 60.0
 
         if self.viewer is None:
             from gym.envs.classic_control import rendering
             self.viewer = rendering.Viewer(screen_width, screen_height)
-            l,r,t,b = -cartwidth/2, cartwidth/2, cartheight/2, -cartheight/2
-            #axleoffset =cartheight/4.0
-            cart = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
-            self.carttrans = rendering.Transform()
-            cart.add_attr(self.carttrans)
-            self.viewer.add_geom(cart)
-            # l,r,t,b = -polewidth/2,polewidth/2,polelen-polewidth/2,-polewidth/2
-            # pole = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
-            # pole.set_color(.8,.6,.4)
-            # self.poletrans = rendering.Transform(translation=(0, axleoffset))
-            # pole.add_attr(self.poletrans)
-            # pole.add_attr(self.carttrans)
-            # self.viewer.add_geom(pole)
-            # self.axle = rendering.make_circle(polewidth/2)
-            # self.axle.add_attr(self.poletrans)
-            # self.axle.add_attr(self.carttrans)
-            # self.axle.set_color(.5,.5,.8)
-            # self.viewer.add_geom(self.axle)
-            self.track = rendering.Line((0,carty-60), (screen_width,carty-60))
+            l,r,t,b = -self.dinowidth/2, self.dinowidth/2, self.dinoheight/2, -self.dinoheight/2
+            dino = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
+            self.dinostrans = rendering.Transform()
+            dino.add_attr(self.dinostrans)
+            self.viewer.add_geom(dino)
+            self.track = rendering.Line((0,40), (screen_width,40))
             self.track.set_color(0,0,0)
             self.viewer.add_geom(self.track)
 
-            # self._pole_geom = pole
-
         if self.state is None: return None
 
-        # Edit the pole polygon vertex
-        #pole = self._pole_geom
-        #l,r,t,b = -polewidth/2,polewidth/2,polelen-polewidth/2,-polewidth/2
-        #pole.v = [(l,b), (l,t), (r,t), (r,b)]
-
-        x = self.state
-        cartx = x[0]*scale+screen_width/2.0 # MIDDLE OF CART
-        self.carttrans.set_translation(cartx, carty-30)
-        print(carty)
-        print(cartx)
+        self.dinox = screen_width/6.0 -30
+        self.dinostrans.set_translation(self.dinox, self.dinoy)
         #self.poletrans.set_rotation(-x[2])
 
         return self.viewer.render(return_rgb_array = mode=='rgb_array')
+
+
+    def create_state(action):
+        reward = 1.0
+        #if asking to jump
+        if(action == 1):
+            #check if on ground,
+            if(self.dinoy == 70):
+                reward = -.3
+            #if not, nothing
+            else:
+                self.dinoay = 12
+                self.dinovy = 2
+                self.dinoy = 71 #small movement to help me
+                                #with future checks
+                reward = 1
+        #choosing to stay on the ground, so nothing changes
+
+        #checking with obstacles, To-Do
+        for obsta in self.obstacles:
+            if(collision(obsta)):
+                reward = -20
+
+        #returning the state
+        self.state = ()
+        return reward
+
+    #updates the physics for the dino
+    def update_physics():
+        if(self.dinoy == 70):
+            self.dinoy = 70
+            self.dinovy = 0
+            self.dinoay = 0
+        else:
+            self.dinoy = self.dinoy + dinovy
+            self.dinovy = self.dinovy + dinoay
+            self.dinoay = self.dinoay + self.gravity
+
+    def update_obstacles():
+
+        #moves the current obstacles
+        for obsta in self.obstacles:
+            obsta[1] = obsta[1] - self.obstacle_speed
+
+        #generates new obstacles
+        if(self.time == 100): #every 2 seconds
+            obType = randint(0,2) #0 or 1
+            width = 0
+            height = 0
+            if(obType == 1):
+                width = 30
+                height = 60
+            else:
+                width = 50
+                height = 20
+            self.obstacles.append([obType, 600, 30, height, width])
+            self.time = 0
+        else:
+            self.time = self.time + 1
+
+    def collision(obstacle):
+        return (self.dinox <= obstacle[1]+obstacle[4]) and (obstacle[1] <= self.dionx + self.width) or (self.dinoy <= obstacle[2]+obstacle[3]) and (obstacle[2] <= self.dinoy + self.height)
 
     def close(self):
         if self.viewer:
