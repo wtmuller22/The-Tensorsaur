@@ -1,5 +1,6 @@
 """
 2D rendering framework
+THIS IS FROM OPEN AI, NO CREDIT TO ME
 """
 from __future__ import division
 import os
