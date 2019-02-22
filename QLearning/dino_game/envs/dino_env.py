@@ -5,7 +5,7 @@ from gym.utils import seeding
 import numpy as np
 import pdb
 import random
-import rendering
+from gym.envs.classic_control import rendering
 #from dino_dynam import Dinosaur
 
 class DinoEnv(gym.Env):
@@ -81,8 +81,6 @@ class DinoEnv(gym.Env):
         world_width = 60
         scale = screen_width/world_width
 
-
-
         #the renderer creation
         if self.viewer is None:
             self.viewer = rendering.Viewer(screen_width, screen_height)
@@ -128,15 +126,14 @@ class DinoEnv(gym.Env):
                 reward = 1
         #choosing to stay on the ground, so nothing changes
 
-        #checking with obstacles, HAS MAJOR ISSUE ------------------------------------!!!!!!!
+        #checking with obstacles
         for obsta in self.obstacles:
             if(self.collision(obsta) and obsta[5] == 0):
                 reward = -20
                 obsta[5] = 1
-                print('ObId{}'.format(self.obsId))
 
         #returning the state
-        self.state = ()
+        self.state = [self.dinox, self.dinoy, self.obstacles]
         return reward
 
     #updates the physics for the dino
@@ -184,7 +181,14 @@ class DinoEnv(gym.Env):
             self.time = self.time + 1
 
     def collision(self, obstacle):
-        return (self.dinox <= obstacle[1]+obstacle[4]) and (obstacle[1] <= self.dinox + self.dinowidth) or (self.dinoy <= obstacle[2]+obstacle[3]) and (obstacle[2] <= self.dinoy + self.dinoheight)
+        sX = (self.dinox, self.dinox+self.dinowidth)
+        sY = (self.dinoy, self.dinox+self.dinoheight)
+        oX = (obstacle[1],obstacle[1]+obstacle[4])
+        oY = (obstacle[2],obstacle[2]+obstacle[3])
+        #intersections
+        xCollision = sX[0] <= oX[1] and oX[0] <= sX[1]
+        yCollision = sY[0] <= oY[1] and oY[0] <= sY[1]
+        return xCollision and yCollision
 
     def close(self):
         if self.viewer:
