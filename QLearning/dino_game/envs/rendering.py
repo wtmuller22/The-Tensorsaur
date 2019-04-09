@@ -1,6 +1,5 @@
 """
 2D rendering framework
-THIS IS FROM OPEN AI, NO CREDIT TO ME
 """
 from __future__ import division
 import os
@@ -150,8 +149,11 @@ def _add_attrs(geom, attrs):
         geom.set_linewidth(attrs["linewidth"])
 
 class Geom(object):
-    def __init__(self):
-        self._color=Color((0, 0, 0, 1.0))
+    def __init__(self, image = False):
+        if image:
+            self._color=Color((255, 255, 255, 1.0))
+        else:
+            self._color=Color((0, 0, 0, 1.0))
         self.attrs = [self._color]
     def render(self):
         for attr in reversed(self.attrs):
@@ -299,13 +301,47 @@ class Line(Geom):
 
 class Image(Geom):
     def __init__(self, fname, width, height):
-        Geom.__init__(self)
+        Geom.__init__(self, image = True)
         self.width = width
         self.height = height
-        img = pyglet.image.load(fname)
-        self.img = img
+        self.imgOne = pyglet.image.load(fname)
+        if (self.height == 75 and self.width == 50):
+            self.imgTwo = pyglet.image.load('C:\\Users\\wtmul\\Project01\\gym\\gym\\envs\\classic_control\\sprites\\dinoLeftUp.png')
+        else:
+            self.imgTwo = None
+        self.img = self.imgOne
         self.flip = False
+        self.toggle = True
+        self.count = 0
+    def updateImg(self):
+        if (self.imgTwo != None):
+            self.count = self.count + 1
+            if self.count == 20:
+                if self.toggle:
+                    self.img = self.imgTwo
+                    self.toggle = False
+                else:
+                    self.img = self.imgOne
+                    self.toggle = True
+                self.count = 0
+    def jumping(self):
+        self.imgOne = pyglet.image.load('C:\\Users\\wtmul\\Project01\\gym\\gym\\envs\\classic_control\\sprites\\dinoStand.png')
+        self.imgTwo = None
+        self.img = self.imgOne
+    def running(self):
+        self.imgOne = pyglet.image.load('C:\\Users\\wtmul\\Project01\\gym\\gym\\envs\\classic_control\\sprites\\dinoRightUp.png')
+        self.imgTwo = pyglet.image.load('C:\\Users\\wtmul\\Project01\\gym\\gym\\envs\\classic_control\\sprites\\dinoLeftUp.png')
+        self.img = self.imgOne
+        self.width = 50
+        self.height = 75
+    def ducking(self):
+        self.imgOne = pyglet.image.load('C:\\Users\\wtmul\\Project01\\gym\\gym\\envs\\classic_control\\sprites\\dinoDownRightUp.png')
+        self.imgTwo = pyglet.image.load('C:\\Users\\wtmul\\Project01\\gym\\gym\\envs\\classic_control\\sprites\\dinoDownLeftUp.png')
+        self.img = self.imgOne
+        self.width = 85
+        self.height = 40
     def render1(self):
+        self.updateImg()
         self.img.blit(-self.width/2, -self.height/2, width=self.width, height=self.height)
 
 # ================================================================
@@ -323,8 +359,8 @@ class SimpleImageViewer(object):
                 scale = self.maxwidth / width
                 width = int(scale * width)
                 height = int(scale * height)
-            self.window = pyglet.window.Window(width=width, height=height, 
-                display=self.display, vsync=False, resizable=True)            
+            self.window = pyglet.window.Window(width=width, height=height,
+                display=self.display, vsync=False, resizable=True)
             self.width = width
             self.height = height
             self.isopen = True
@@ -339,9 +375,9 @@ class SimpleImageViewer(object):
                 self.isopen = False
 
         assert len(arr.shape) == 3, "You passed in an image with the wrong number shape"
-        image = pyglet.image.ImageData(arr.shape[1], arr.shape[0], 
+        image = pyglet.image.ImageData(arr.shape[1], arr.shape[0],
             'RGB', arr.tobytes(), pitch=arr.shape[1]*-3)
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, 
+        gl.glTexParameteri(gl.GL_TEXTURE_2D,
             gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
         texture = image.get_texture()
         texture.width = self.width
