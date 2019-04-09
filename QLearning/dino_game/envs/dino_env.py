@@ -11,14 +11,14 @@ from gym.envs.classic_control import rendering
 class DinoEnv(gym.Env):
     #-.02, 6
     """ Actions:
-        Type: Discrete(2)
+        Type: Discrete(3)
         Num Action
         0   Stay
         1   Jump
         2   Duck
 
         Obstacles:
-        Type: smallCactusDoub(0), smallCactusTrip(1), bigCactus(2), bird(3)
+        Type: smallCactusDoub(3), smallCactusTrip(2), bigCactus(1), bird(0)
         hasBeenCollidedWith: No(0), Yes(1)
         Parameters as Tuple:
         (type, x-coord, y-coord, height, width, hasBeenCollidedWith, obsId)
@@ -35,8 +35,10 @@ class DinoEnv(gym.Env):
         self.gravity = -.02 #random value
         self.tau = 0.02  # seconds between state updates
         self.kinematics_integrator = 'euler'
-        self.action_space = spaces.Discrete(2)
-        # self.observation_space = spaces.Box(-high, high, dtype=np.float32)
+        self.action_space = spaces.Discrete(3)
+        low = np.array([0, 0, -6]) #previousAction, objType, objX
+        high = np.array([2, 3, 600])
+        self.observation_space = spaces.Discrete(7284)
 
         self.seed()
         self.viewer = None
@@ -64,19 +66,27 @@ class DinoEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
+    def encode(self, prevState, objType, objX):
+        i = objX + 6
+        i *= 4
+        i += objType
+        i *= 3
+        i += prevState
+        return i
+
     def step(self, action):
         self.update_physics()
         self.update_obstacles()
         reward = self.create_state(action)
         done = False
-        if(reward < -60):
+        if(reward == -20):
             done = True
         return self.state, reward, done, {}
 
     def reset(self):
-        self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
+        self.state = self.encode(0, 0, -6)
         self.steps_beyond_done = None
-        return np.array(self.state)
+        return self.state
 
     def render(self, mode='human'):
         screen_width = 600
@@ -174,7 +184,10 @@ class DinoEnv(gym.Env):
                 obsta[5] = 1
 
         #returning the state
-        self.state = [self.dinox, self.dinoy, self.obstacles]
+        if (len(self.obstacles) > 0):
+            self.state = self.encode(action, self.obstacles[0][0], self.obstacles[0][1])
+        else:
+            self.state = self.encode(action, 0, -6)
         return reward
 
     #updates the physics for the dino
