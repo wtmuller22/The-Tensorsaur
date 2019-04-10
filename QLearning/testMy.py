@@ -7,16 +7,16 @@ q_table = np.zeros([env.observation_space.n, env.action_space.n])
 #Hyperparameters
 alpha = 0.1
 gamma = 0.6
-epsilon = 0.1
+epsilon = 0.05
 
 for i in range(1, 100001):
     state = env.reset()
-    env.render()
 
     epochs, penalties, reward, = 0, 0, 0
     done = False
 
     while not done:
+        env.render()
         if random.uniform(0, 1) < epsilon:
             action = env.action_space.sample() # Explore action space
         else:

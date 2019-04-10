@@ -36,13 +36,11 @@ class DinoEnv(gym.Env):
         self.tau = 0.02  # seconds between state updates
         self.kinematics_integrator = 'euler'
         self.action_space = spaces.Discrete(3)
-        low = np.array([0, 0, -6]) #previousAction, objType, objX
-        high = np.array([2, 3, 600])
-        self.observation_space = spaces.Discrete(7284)
+        self.observation_space = spaces.Discrete(7285)
 
         self.seed()
         self.viewer = None
-        self.state = None
+        self.state = self.encode(0, 0, -6)
 
         self.steps_beyond_done = None
 
@@ -84,7 +82,7 @@ class DinoEnv(gym.Env):
         return self.state, reward, done, {}
 
     def reset(self):
-        self.state = self.encode(0, 0, -6)
+        #self.state = self.encode(0, 0, -6)
         self.steps_beyond_done = None
         return self.state
 
@@ -181,7 +179,7 @@ class DinoEnv(gym.Env):
         for obsta in self.obstacles:
             if(self.collision(obsta) and obsta[5] == 0):
                 reward = -20
-                obsta[5] = 1
+                obsta[5] = 0
 
         #returning the state
         if (len(self.obstacles) > 0):
@@ -240,7 +238,7 @@ class DinoEnv(gym.Env):
             else:
                 width = 70
                 height = 55
-                ycoord = 100
+                ycoord = 120
             self.obstacles.append([obType, 600, ycoord, height, width, 0, self.obsId])
             self.time = 0
             self.obsId = self.obsId + 1
