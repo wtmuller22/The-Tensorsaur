@@ -82,11 +82,12 @@ class DinoEnv(gym.Env):
         return self.state, reward, done, {}
 
     def reset(self):
-        #self.state = self.encode(0, 0, -6)
+        self.state = self.encode(0, 0, -6)
+        del self.obstacles[:]
         self.steps_beyond_done = None
         return self.state
 
-    def render(self, mode='human'):
+    def render(self, mode='fast'):
         screen_width = 600
         screen_height = 400
 
@@ -142,7 +143,6 @@ class DinoEnv(gym.Env):
 
 
     def create_state(self, action):
-        reward = 1.0
         #if asking to jump
         if(action == 1):
             #check if on ground,
@@ -150,6 +150,7 @@ class DinoEnv(gym.Env):
                 reward = -.3
             #if not, nothing
             else:
+
                 self.viewer.geoms[0].jumping()
                 self.dinoay = 0
                 self.dinovy = 6
@@ -158,6 +159,7 @@ class DinoEnv(gym.Env):
                 reward = 1
         #if asking to duck
         elif(action == 2):
+            reward = 1
             #check if not on ground
             if(self.dinoy > 70):
                 reward = -.3
@@ -168,6 +170,7 @@ class DinoEnv(gym.Env):
                     self.dinoheight = 40
                     self.dinoy = 50
         else:
+            reward = 5
             if (self.dinowidth != 50):
                 self.viewer.geoms[0].running()
                 self.dinowidth = 50

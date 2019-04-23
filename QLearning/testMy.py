@@ -5,11 +5,11 @@ env = gym.make('CartPole-v0')
 q_table = np.zeros([env.observation_space.n, env.action_space.n])
 #Training the agent
 #Hyperparameters
-alpha = 0.1
+alpha = 0.2
 gamma = 0.6
-epsilon = 0.05
+epsilon = 0
 
-for i in range(1, 100001):
+for i in range(1, 10001):
     state = env.reset()
 
     epochs, penalties, reward, = 0, 0, 0
