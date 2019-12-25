@@ -8,22 +8,16 @@ Created on Sep 21, 2018
 
 #Ground class
 class Ground(pyglet.sprite.Sprite):
-    
-    FRAMES = 1 #per second
-    
-    
-    
-    #converts to fps for code
-    FRAMES = 1.0/FRAMES
-    current_ground_speed = (-800.0/60) / FRAMES
-    
+
+    current_ground_speed = -800.0
+
     def __init__(self, vis, at, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.isVisible = vis
         self.atOrigin = at
         self.start = 0
         self.length = gameboard.window.width
-    
+
     def update_ground(self, dt):
         whole_ground = image.load('sprites/ground.png')
         if self.isVisible and self.atOrigin:

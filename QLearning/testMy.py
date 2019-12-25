@@ -1,6 +1,6 @@
 import gym,time, random
 import numpy as np
-env = gym.make('CartPole-v0')
+env = gym.make('DinoEnv-v0')
 
 q_table = np.zeros([env.observation_space.n, env.action_space.n])
 #Training the agent

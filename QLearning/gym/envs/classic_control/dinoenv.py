@@ -82,12 +82,12 @@ class DinoEnv(gym.Env):
         return self.state, reward, done, {}
 
     def reset(self):
-        self.state = self.encode(0, 0, -6)
-        del self.obstacles[:]
+        #self.state = self.encode(0, 0, -6)
+        #del self.obstacles[:]
         self.steps_beyond_done = None
         return self.state
 
-    def render(self, mode='fast'):
+    def render(self, mode='human'):
         screen_width = 600
         screen_height = 400
 

@@ -9,26 +9,18 @@ Created on Sep 7, 2018
 '''
 #Dino Class
 class Dinosaur(pyglet.sprite.Sprite):
-    
-    
+
     def update_high_score(score):
         f = open("highscore.txt", 'w')
         f.write('%d' % score)
         f.close()
-        
+
     def get_high_score():
         f = open("highscore.txt", 'r')
         toReturn = int(f.read())
         f.close()
         return toReturn
-    
-    #Set Frames
-    FRAMES = 1
-    
-    
-    #converts to fps for code
-    FRAMES = 1.0/FRAMES
-    
+
     high_score = get_high_score()
     dino_dist = 0.0
     dino_running = image.load_animation('sprites/dinomation.gif', None, None)
@@ -36,18 +28,16 @@ class Dinosaur(pyglet.sprite.Sprite):
     dino_dead = img=pyglet.image.load('sprites/dinoDead.png', None, None)
     dino_pause_up = image.load('sprites/dinoLeftUp.png')
     dino_pause_down = image.load('sprites/dinoDownLeftUp.png')
-    
-    def __init__(self, FRAMES):
+
+    def __init__(self):
         super().__init__(img=Dinosaur.dino_running)
         self.velocity_y = 0.0
-        self.acceleration_y = -.6#-3500 #-.6 for 1 frame
+        self.acceleration_y = -3500
         self.isJumping = False
         self.x = 20
-    
+
     def update(self, dt):
         if (self.y > 0):
-            print("Y Pos: {}".format(self.y))
-            print("\n")
             self.velocity_y += self.acceleration_y * dt
             if (self.y + self.velocity_y * dt) < 0:
                 self.velocity_y = 0
@@ -55,7 +45,7 @@ class Dinosaur(pyglet.sprite.Sprite):
                 self.image = Dinosaur.dino_running
             else:
                 self.y += self.velocity_y * dt
-    
+
     #[num1, num2] lower value in the left, higher value in the right
     def overlap(self, range1:list, range2:list):
         return range1[0] <= range2[1] and range2[0] <= range1[1]
@@ -64,7 +54,7 @@ class Dinosaur(pyglet.sprite.Sprite):
     def collision(self, other):
         x_range_self = [self.x, self.x + self.width]
         y_range_self = [self.y, self.y + self.height]
-        
+
         x_range_other = [other.x, other.x + other.width]
         y_range_other = [other.y, other.y + other.height]
         #Only runs rest of code if general sprite boxes are overlapping
@@ -85,15 +75,15 @@ class Dinosaur(pyglet.sprite.Sprite):
             return False
 
     #Returns a set of all the dimension ranges for
-    #the exact overlapping rectangles within each 
+    #the exact overlapping rectangles within each
     #sprite's image.
     def get_regions(self, other):
         x_range_self = [0, 0]
         y_range_self = [0, 0]
-        
+
         x_range_other = [0, 0]
         y_range_other = [0, 0]
-        
+
         if self.x > other.x:
             x_range_other = [math.ceil(self.x - other.x), other.width]
             x_range_self = [0, math.ceil(other.x + other.width - self.x)]
@@ -106,13 +96,13 @@ class Dinosaur(pyglet.sprite.Sprite):
         else:
             y_range_self = [math.ceil(other.y - self.y), self.height]
             y_range_other = [0, math.ceil(self.y + self.height - other.y)]
-        return [x_range_self[0], 
-                x_range_self[1], 
-                x_range_other[0], 
-                x_range_other[1], 
-                y_range_self[0], 
-                y_range_self[1], 
-                y_range_other[0], 
+        return [x_range_self[0],
+                x_range_self[1],
+                x_range_other[0],
+                x_range_other[1],
+                y_range_self[0],
+                y_range_self[1],
+                y_range_other[0],
                 y_range_other[1]]
 
     #Returns a set consisting of the image regions
@@ -137,8 +127,8 @@ class Dinosaur(pyglet.sprite.Sprite):
             other_section.width = ranges[3] - ranges[2]
             other_section.height = ranges[7] - ranges[6]
         return [self_section, other_section]
-    
-    #Returns a set of integers representing the 
+
+    #Returns a set of integers representing the
     #alpha values for each pixel within the given section.
     def get_pixel_alpha_data(self, section):
         raw = section.get_image_data()
@@ -153,8 +143,7 @@ class Dinosaur(pyglet.sprite.Sprite):
         data = unpack("%iB" % (len(pixels)), pixels)
         mask = data[3::4]
         return mask
-    
-    
-    
-#End of Class
 
+
+
+#End of Class
